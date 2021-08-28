@@ -3,11 +3,19 @@
 
 #include "ShooterCharacter.h"
 
+#include "GameFramework/SpringArmComponent.h"
+
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// CameraBoom 생성 (
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->bUsePawnControlRotation = true; // Controller에 따라 Arm을 회전시킵니다.
 }
 
 // Called when the game starts or when spawned
