@@ -29,6 +29,20 @@ protected:
 	 */
 	void MoveRight(float Value);
 
+	/**
+	 * @brief 주어진 Rate으로 좌우 회전 입력을 할 때 호출됩니다.
+	 * @param Rate 이 값은 normalized된 값입니다. (-1 ~ 1)
+	 * 1.0은 TurnRate를 100% 반영하는 것을 의미합니다.
+	 */
+	void TurnAtRate(float Rate);
+
+	/**
+	 * @brief 주어진 Rate으로 위아래 회전 입력을 할 때 호출됩니다.
+	 * @param Rate 이 값은 normalized된 값입니다. (-1 ~ 1)
+	 * 1.0은 TurnRate를 100% 반영하는 것을 의미합니다.
+	 */
+	void LookUpAtRate(float Rate);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -48,6 +62,20 @@ private:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	/*
+	 * 기본 좌우 회전 속도입니다. (deg/sec)
+	 * 다른 요소들이 최종 회전 속도에 영향을 미칠 수 있습니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float BaseTurnRate;
+
+	/*
+	 * 기본 위아래 회전 속도입니다. (deg/sec)
+	 * 다른 요소들이 최종 회전 속도에 영향을 미칠 수 있습니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float BaseLookUpRate;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
