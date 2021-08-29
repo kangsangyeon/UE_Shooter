@@ -28,11 +28,19 @@ public:
 
 private:
 	/*
-	 * CameraBoomÀº Ä³¸¯ÅÍ µÚ¿¡¼­ Ä«¸Ş¶óÀÇ À§Ä¡¸¦ Á¶Á¤ÇÏ´Â ÄÄÆ÷³ÍÆ®ÀÔ´Ï´Ù.
+	 * CameraBoomì€ ìºë¦­í„° ë’¤ì—ì„œ ì¹´ë©”ë¼ì˜ ìœ„ì¹˜ë¥¼ ì¡°ì •í•˜ëŠ” ì»´í¬ë„ŒíŠ¸ì…ë‹ˆë‹¤.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera, meta=(AllowPrivateAccess="true"))
 	class USpringArmComponent* CameraBoom;
 
+	/*
+	 * ìºë¦­í„°ë¥¼ ë”°ë¼ê°€ëŠ” ì¹´ë©”ë¼ ì»´í¬ë„ŒíŠ¸ì…ë‹ˆë‹¤.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
+
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 };
