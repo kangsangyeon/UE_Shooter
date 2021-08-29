@@ -19,6 +19,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/*
+	 * 전진/후진 입력에 의해 호출됩니다.
+	 */
+	void MoveForward(float Value);
+
+	/*
+	 * 옆 이동에 의해 호출됩니다.
+	 */
+	void MoveRight(float Value);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
