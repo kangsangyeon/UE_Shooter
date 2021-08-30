@@ -43,6 +43,11 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	/**
+	 * @brief FireButton이 눌렸을 때 호출됩니다.
+	 */
+	void FireWeapon();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
