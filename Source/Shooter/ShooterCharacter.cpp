@@ -25,20 +25,20 @@ AShooterCharacter::AShooterCharacter() :
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 300.0f;
 	CameraBoom->bUsePawnControlRotation = true; // Controller에 따라 Arm을 회전시킵니다.
+	CameraBoom->SocketOffset = FVector{0.f, 50.f, 50.f}; // 카메라가 캐릭터의 살짝 옆에서 비추도록 offset을 설정합니다.
 
 	// FollowCamera 생성
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	// Controller가 회전할 때 Pawn이 회전하지 않도록 설정합니다.
-	// Controller가 Camera에만 영향을 미치도록 합니다.
+	// Controller가 회전할 때 Pawn도 같이 회전하도록 설정합니다.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// CharacterMovement 설정
-	GetCharacterMovement()->bOrientRotationToMovement = true; // 캐릭터가 이동하는 방향을 바라보도록 합니다.
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->RotationRate = FRotator{0.f, 540.f, 0.f};
 
 	GetCharacterMovement()->JumpZVelocity = 600.f;
