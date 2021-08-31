@@ -156,9 +156,21 @@ void AShooterCharacter::FireWeapon()
 			if (ScreenTraceHit.bBlockingHit)
 			{
 				BeamEndPoint = ScreenTraceHit.Location;
+			}
+
+			// 두번째 Trace를 실시합니다.
+			// 이번에는 Gun Barrel에서부터 시작합니다.
+			const FVector WeaponTraceStart{SocketTransform.GetLocation()};
+			const FVector WeaponTraceEnd{BeamEndPoint};
+
+			FHitResult WeaponTraceHit;
+			GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+			if (WeaponTraceHit.bBlockingHit)
+			{
+				BeamEndPoint = WeaponTraceHit.Location;
 
 				if (ImpactParticles)
-					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, ScreenTraceHit.Location);
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEndPoint);
 			}
 
 			if (BeamParticles)
