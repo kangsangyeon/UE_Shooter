@@ -126,35 +126,47 @@ void AShooterCharacter::FireWeapon()
 		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(GetMesh());
 
 		if (MuzzleFlash)
-		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
-		}
 
-		FHitResult FireHit;
-		const FVector Start{SocketTransform.GetLocation()};
-		const FQuat Rotation{SocketTransform.GetRotation()};
-		const FVector RotationAxis{Rotation.GetAxisX()};
-		const FVector End{Start + RotationAxis * 50'000.f};
+		// 현재 Viewport의 크기를 얻어오고, Viewport의 중심에 있는 Crosshair의 위치를 계산합니다.
+		FVector2D ViewportSize;
+		if (GEngine && GEngine->GameViewport)
+			GEngine->GameViewport->GetViewportSize(ViewportSize);
 
-		FVector BeamEndPoint{End};
+		FVector2D CrosshairViewportPosition{ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
+		CrosshairViewportPosition.Y -= 50.f;
 
-		GetWorld()->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
-		if (FireHit.bBlockingHit)
+		// Crosshair의 World Position과 Direction을 얻습니다.
+		FVector CrosshairWorldPosition;
+		FVector CrosshairWorldDirection;
+		bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+			UGameplayStatics::GetPlayerController(this, 0),
+			CrosshairViewportPosition, CrosshairWorldPosition, CrosshairWorldDirection);
+
+		if (bScreenToWorld)
 		{
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.f);
-			DrawDebugPoint(GetWorld(), FireHit.Location, 5.f, FColor::Red, false, 2.f);
+			const FVector Start{CrosshairWorldPosition};
+			const FVector End{CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f};
 
-			BeamEndPoint = FireHit.Location;
+			FVector BeamEndPoint{End};
 
-			if (ImpactParticles)
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FireHit.Location);
-		}
+			// 조준한 방향으로 LineTrace를 실행하여 부딪친 물체가 있는지 판별합니다.
+			FHitResult ScreenTraceHit;
+			GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECollisionChannel::ECC_Visibility);
+			if (ScreenTraceHit.bBlockingHit)
+			{
+				BeamEndPoint = ScreenTraceHit.Location;
 
-		if (BeamParticles)
-		{
-			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
-			if (Beam)
-				Beam->SetVectorParameter(FName{"Target"}, BeamEndPoint);
+				if (ImpactParticles)
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, ScreenTraceHit.Location);
+			}
+
+			if (BeamParticles)
+			{
+				UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
+				if (Beam)
+					Beam->SetVectorParameter(FName{"Target"}, BeamEndPoint);
+			}
 		}
 	}
 
