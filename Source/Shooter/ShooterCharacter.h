@@ -48,6 +48,12 @@ protected:
 	 */
 	void FireWeapon();
 
+	/**
+	 * @brief Crosshair 너머 바라보는 방향으로 Linecast를 실시하여 충돌한 위치값을 얻어냅니다.
+	 * 만약 충돌한 오브젝트가 없다면 바라보는 방향으로 먼 거리의 지점이 반환됩니다.
+	 */
+	const bool GetBeamEndPoint(const FVector& MuzzleSocketLocation, FVector& OutBeamEndPoint);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
