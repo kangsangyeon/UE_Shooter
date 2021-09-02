@@ -29,7 +29,7 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	// 에임 회전값과 이동 방향 회전값의 차이(Offset)를 얻습니다.
 	const FRotator AimRotation = ShooterCharacter->GetBaseAimRotation();
 	const FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(Velocity);
-	MovementOffset = UKismetMathLibrary::NormalizedDeltaRotator(AimRotation, MovementRotation).Yaw;
+	MovementOffset = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 
 	// Debug
 	const FString AimRotationMessage = FString::Printf(TEXT("Base Aim Rotation: %f"), AimRotation.Yaw);
