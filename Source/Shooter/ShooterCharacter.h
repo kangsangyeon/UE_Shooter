@@ -44,6 +44,18 @@ protected:
 	void LookUpAtRate(float Rate);
 
 	/**
+	 * @brief 마우스로 좌우 회전 입력을 할 때 호출됩니다.
+	 * @param Value 마우스 좌우 회전 입력값입니다.
+	 */
+	void Turn(float Value);
+
+	/**
+	 * @brief 마우스로 위아래 회전 입력을 할 때 호출됩니다.
+	 * @param Value 마우스 위아래 회전 입력값입니다.
+	 */
+	void LookUp(float Value);
+
+	/**
 	 * @brief FireButton이 눌렸을 때 호출됩니다.
 	 */
 	void FireWeapon();
@@ -61,6 +73,11 @@ protected:
 	void AimingButtonReleased();
 
 	void CameraInterpolation(float DeltaTime);
+
+	/**
+	 * @brief 조준하고 있는지에 대한 여부에 따라 BaseTurnRate와 BaseLookUpRate를 설정합니다.
+	 */
+	void SetLookRates();
 
 public:
 	// Called every frame
@@ -95,6 +112,58 @@ private:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseLookUpRate;
+
+	/**
+	 * @brief 조준중이지 않을 때 사용될 좌우 회전 속도입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float HipTurnRate;
+
+	/**
+	 * @brief 조준중이지 않을 때 사용될 위아래 회전 속도입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float HipLookUpRate;
+
+	/**
+	 * @brief 조준중일 때 사용될 좌우 회전 속도입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float AimingTurnRate;
+
+	/**
+	 * @brief 조준중일 때 사용될 위아래 회전 속도입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float AimingLookUpRate;
+
+	/**
+	 * @brief 마우스로 조작하며 조준중이지 않을 때 사용될 좌우 회전 민감도 Scale Factor입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta=(ClampMin="0.0", ClampMax="1.0", UIMin="0.0", UIMax="1.0"))
+	float MouseHipTurnRate;
+
+	/**
+	 * @brief 마우스로 조작하며 조준중이지 않을 때 사용될 위아래 회전 민감도 Scale Factor입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float MouseHipLookUpRate;
+
+	/**
+	 * @brief 마우스로 조작하며 조준중일 때 사용될 좌우 회전 민감도 Scale Factor입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float MouseAimingTurnRate;
+
+	/**
+	 * @brief 마우스로 조작하며 조준중일 때 사용될 위아래 회전 민감도 Scale Factor입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float MouseAimingLookUpRate;
 
 	/**
 	 * @brief 랜덤한 총소리를 내는 사운드 큐입니다.
