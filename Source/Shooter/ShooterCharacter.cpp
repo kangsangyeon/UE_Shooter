@@ -270,6 +270,18 @@ void AShooterCharacter::SetLookRates()
 	BaseLookUpRate = bAiming ? AimingLookUpRate : HipLookUpRate;
 }
 
+void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
+{
+	const FVector2D WalkSpeedRange{0.f, GetCharacterMovement()->MaxWalkSpeed};
+	const FVector2D VelocityMultiplierRange{0.f, 1.f};
+	FVector VelocityXY = GetVelocity();
+	VelocityXY.Z = 0;
+
+	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, VelocityXY.Size());
+
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {

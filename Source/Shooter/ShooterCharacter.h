@@ -79,6 +79,8 @@ protected:
 	 */
 	void SetLookRates();
 
+	void CalculateCrosshairSpread(float DeltaTime);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -221,6 +223,36 @@ private:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float ZoomInterpSpeed;
+
+	/**
+	 * @brief Crosshair가 벌어지는 정도를 결정합니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshair, meta = (AllowPrivateAccess = "true"))
+	float CrosshairSpreadMultiplier;
+
+	/**
+	 * @brief Velocity 컴포넌트용 Crosshair Spread입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshair, meta = (AllowPrivateAccess = "true"))
+	float CrosshairVelocityFactor;
+
+	/**
+	 * @brief Air 컴포넌트용 Crosshair Spread입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshair, meta = (AllowPrivateAccess = "true"))
+	float CrosshairInAirFactor;
+
+	/**
+	 * @brief Aim 컴포넌트용 Crosshair Spread입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshair, meta = (AllowPrivateAccess = "true"))
+	float CrosshairAimFactor;
+
+	/**
+	 * @brief Shooting 컴포넌트용 Crosshair Spread입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshair, meta = (AllowPrivateAccess = "true"))
+	float CrosshairShootingFactor;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
