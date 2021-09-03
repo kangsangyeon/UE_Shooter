@@ -277,9 +277,17 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 	FVector VelocityXY = GetVelocity();
 	VelocityXY.Z = 0;
 
+	// 캐릭터가 이동중일 때 이동 속도에 따라 Crosshair가 벌어지는 정도를 갱신합니다.
 	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, VelocityXY.Size());
 
-	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+	// 캐릭터가 공중에 떠 있을 때 Crosshair가 벌어지는 정도를 갱신합니다.
+	CrosshairInAirFactor = GetCharacterMovement()->IsFalling()
+		                       // 공중에 떠있을 때 서서히 Crosshair가 벌어지기 시작합니다.
+		                       ? FMath::FInterpTo(CrosshairInAirFactor, 2.25f, DeltaTime, 2.25f)
+		                       // 공중에 떠있다가 땅에 착지했을 때 Crosshair가 굉장히 빠른 속도로 원래대로 좁혀집니다.
+		                       : FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
+
+	CrosshairSpreadMultiplier = 1.f + CrosshairVelocityFactor + CrosshairInAirFactor;
 }
 
 // Called every frame
