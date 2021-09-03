@@ -35,6 +35,9 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	if (ShooterCharacter->GetVelocity().Size() > 0)
 		LastMovementOffset = MovementOffset;
 
+	// 조준중인지에 대한 여부를 얻습니다.
+	bAiming = ShooterCharacter->GetAiming();
+
 	// Debug
 	const FString AimRotationMessage = FString::Printf(TEXT("Base Aim Rotation: %f"), AimRotation.Yaw);
 	const FString MovementRotationMessage = FString::Printf(TEXT("Movement Rotation: %f"), MovementRotation.Yaw);
