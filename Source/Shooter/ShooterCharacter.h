@@ -80,6 +80,11 @@ protected:
 	void SetLookRates();
 
 	void CalculateCrosshairSpread(float DeltaTime);
+	
+	void StartCrosshairFireTimer();
+
+	UFUNCTION()
+	void OnFinishedCrosshairFireTimer();
 
 public:
 	// Called every frame
@@ -249,10 +254,16 @@ private:
 	float CrosshairAimFactor;
 
 	/**
-	 * @brief Shooting 컴포넌트용 Crosshair Spread입니다.
+	 * @brief Firing 컴포넌트용 Crosshair Spread입니다.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshair, meta = (AllowPrivateAccess = "true"))
-	float CrosshairShootingFactor;
+	float CrosshairFiringFactor;
+
+	float FireTimerDuration;
+
+	bool bFiring;
+
+	FTimerHandle CrosshairFireTimer;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };

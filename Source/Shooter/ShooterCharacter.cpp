@@ -39,7 +39,10 @@ AShooterCharacter::AShooterCharacter() :
 	CrosshairVelocityFactor(0.f),
 	CrosshairInAirFactor(0.f),
 	CrosshairAimFactor(0.f),
-	CrosshairShootingFactor(0.f)
+	CrosshairFiringFactor(0.f),
+	// 총알 발사 타이머 변수
+	FireTimerDuration(.05),
+	bFiring(false)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -167,6 +170,8 @@ void AShooterCharacter::FireWeapon()
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
+
+	StartCrosshairFireTimer();
 }
 
 const bool AShooterCharacter::GetBeamEndPoint(
@@ -179,7 +184,6 @@ const bool AShooterCharacter::GetBeamEndPoint(
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 
 	FVector2D CrosshairViewportPosition{ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
-	CrosshairViewportPosition.Y -= 50.f;
 
 	// Crosshair의 World Position과 Direction을 얻습니다.
 	FVector CrosshairWorldPosition;
@@ -271,12 +275,29 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 		                     // 조준을 해제할 때 Crosshair는 서서히 원래대로 커집니다.
 		                     : FMath::FInterpTo(CrosshairAimFactor, 0, DeltaTime, 10.f);
 
+	CrosshairFiringFactor = bFiring
+		                        ? FMath::FInterpTo(CrosshairFiringFactor, .3f, DeltaTime, 60.f)
+		                        : FMath::FInterpTo(CrosshairFiringFactor, 0.f, DeltaTime, 60.f);
+
 	CrosshairSpreadMultiplier = FMath::Clamp(
 		1.f
 		+ CrosshairVelocityFactor
 		+ CrosshairInAirFactor
-		+ CrosshairAimFactor,
+		+ CrosshairAimFactor
+		+ CrosshairFiringFactor,
 		0.f, BIG_NUMBER);
+}
+
+void AShooterCharacter::StartCrosshairFireTimer()
+{
+	bFiring = true;
+
+	GetWorld()->GetTimerManager().SetTimer(CrosshairFireTimer, this, &AShooterCharacter::OnFinishedCrosshairFireTimer, FireTimerDuration);
+}
+
+void AShooterCharacter::OnFinishedCrosshairFireTimer()
+{
+	bFiring = false;
 }
 
 // Called every frame
