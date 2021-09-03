@@ -17,7 +17,8 @@ AShooterCharacter::AShooterCharacter() :
 	BaseTurnRate(45.0f),
 	BaseLookUpRate(45.0f),
 	bAiming(false),
-	CameraZoomFOV(60.f)
+	CameraZoomFOV(35.f),
+	ZoomInterpSpeed(20.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -25,9 +26,9 @@ AShooterCharacter::AShooterCharacter() :
 	// CameraBoom 생성 (
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->TargetArmLength = 180.f;
 	CameraBoom->bUsePawnControlRotation = true; // Controller에 따라 Arm을 회전시킵니다.
-	CameraBoom->SocketOffset = FVector{0.f, 50.f, 50.f}; // 카메라가 캐릭터의 살짝 옆에서 비추도록 offset을 설정합니다.
+	CameraBoom->SocketOffset = FVector{0.f, 50.f, 70.f}; // 카메라가 캐릭터의 살짝 옆에서 비추도록 offset을 설정합니다.
 
 	// FollowCamera 생성
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -53,7 +54,11 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	if (FollowCamera)
+	{
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
+	}
+
 
 	UE_LOG(LogTemp, Warning, TEXT("BeginPlay() called!"));
 	int myInt{42};
@@ -178,16 +183,31 @@ const bool AShooterCharacter::GetBeamEndPoint(
 
 	if (bScreenToWorld)
 	{
-		// Gun Barrel에서부터 조준한 방향으로 LineTrace를 실행하여 부딪친 물체가 있는지 판별합니다.
-		const FVector WeaponTraceStart{MuzzleSocketLocation};
-		const FVector WeaponTraceEnd{CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f};
+		FVector BeamEndPoint;
 
-		FVector BeamEndPoint = WeaponTraceEnd;
+		// 1차 트레이스를 실시합니다.
+		// 크로스헤어가 존재하는 가상 지점인 World Position에서 조준하는 방향으로 트레이스합니다.
+		// 이 트레이스 결과로 실제로 사용자가 조준한 지점을 알아낼 수 있습니다.
+		const FVector ScreenTraceStart{CrosshairWorldPosition};
+		const FVector ScreenTraceEnd{CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f};
+		BeamEndPoint = ScreenTraceEnd;
 
-		FHitResult WeaponTraceHit;
-		GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-		if (WeaponTraceHit.bBlockingHit)
-			BeamEndPoint = WeaponTraceHit.Location;
+		FHitResult ScreenTraceHit;
+		GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, ScreenTraceStart, ScreenTraceEnd, ECollisionChannel::ECC_Visibility);
+		if (ScreenTraceHit.bBlockingHit)
+		{
+			BeamEndPoint = ScreenTraceHit.Location;
+
+			// 1차 트레이스 Hit에 성공하여 2차 트레이스를 실시합니다.
+			// Gun Barrel에서부터 실제로 조준한 방향으로 LineTrace를 실행하여 부딪친 물체가 있는지 판별합니다.
+			const FVector WeaponTraceStart{MuzzleSocketLocation};
+			const FVector WeaponTraceEnd{BeamEndPoint};
+
+			FHitResult WeaponTraceHit;
+			GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+			if (WeaponTraceHit.bBlockingHit)
+				BeamEndPoint = WeaponTraceHit.Location;
+		}
 
 		OutBeamEndPoint = BeamEndPoint;
 		return true;
@@ -199,22 +219,27 @@ const bool AShooterCharacter::GetBeamEndPoint(
 void AShooterCharacter::AimingButtonPressed()
 {
 	bAiming = true;
-
-	GetFollowCamera()->FieldOfView = CameraZoomFOV;
 }
 
 void AShooterCharacter::AimingButtonReleased()
 {
 	bAiming = false;
-
-	GetFollowCamera()->FieldOfView = CameraDefaultFOV;
 }
 
+void AShooterCharacter::CameraInterpolation(float DeltaTime)
+{
+	// Camera의 FOV를 TargetFOV값으로 서서히 다가가도록 보간합니다.
+	const float TargetFOV = bAiming ? CameraZoomFOV : CameraDefaultFOV;
+	CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, TargetFOV, DeltaTime, ZoomInterpSpeed);
+	GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+}
 
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CameraInterpolation(DeltaTime);
 }
 
 // Called to bind functionality to input

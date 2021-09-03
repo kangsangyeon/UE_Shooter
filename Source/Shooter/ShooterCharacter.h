@@ -54,12 +54,13 @@ protected:
 	 */
 	const bool GetBeamEndPoint(const FVector& MuzzleSocketLocation, FVector& OutBeamEndPoint);
 
-
 	/**
 	 * @brief Aiming 버튼을 눌렀는지 떼었는지에 따라 bAiming값을 true 또는 false로 설정합니다.
 	 */
 	void AimingButtonPressed();
 	void AimingButtonReleased();
+
+	void CameraInterpolation(float DeltaTime);
 
 public:
 	// Called every frame
@@ -140,6 +141,17 @@ private:
 	 * @brief 확대 상태의 카메라 Field of View값입니다.
 	 */
 	float CameraZoomFOV;
+
+	/**
+	 * @brief 현재 프레임의 카메라 FOV 값입니다.
+	 */
+	float CameraCurrentFOV;
+
+	/**
+	 * @brief 조준 또는 해제시에 변화할 FOV값의 보간 속도입니다.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpSpeed;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
