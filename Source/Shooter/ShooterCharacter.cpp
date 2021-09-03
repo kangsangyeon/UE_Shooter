@@ -33,7 +33,13 @@ AShooterCharacter::AShooterCharacter() :
 	CameraDefaultFOV(0.f),
 	CameraCurrentFOV(0.f),
 	CameraZoomFOV(35.f),
-	ZoomInterpSpeed(20.f)
+	ZoomInterpSpeed(20.f),
+	// Crosshair Spread Factor
+	CrosshairSpreadMultiplier(0.f),
+	CrosshairVelocityFactor(0.f),
+	CrosshairInAirFactor(0.f),
+	CrosshairAimFactor(0.f),
+	CrosshairShootingFactor(0.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -287,7 +293,22 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 		                       // 공중에 떠있다가 땅에 착지했을 때 Crosshair가 굉장히 빠른 속도로 원래대로 좁혀집니다.
 		                       : FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
 
-	CrosshairSpreadMultiplier = 1.f + CrosshairVelocityFactor + CrosshairInAirFactor;
+	// 캐릭터가 조준중일 때 Crosshair가 벌어지는 정도를 갱신합니다.
+	CrosshairAimFactor = bAiming
+		                     // 조준중일 때 Crosshair는 절대로 벌어지지 않습니다.
+		                     ? FMath::FInterpTo(CrosshairAimFactor, -5.f, DeltaTime, 50.f)
+		                     // 조준을 해제할 때 Crosshair는 서서히 원래대로 커집니다.
+		                     : FMath::FInterpTo(CrosshairAimFactor, 0, DeltaTime, 10.f);
+
+	CrosshairSpreadMultiplier = FMath::Clamp(
+		1.f
+		+ CrosshairVelocityFactor
+		+ CrosshairInAirFactor
+		+ CrosshairAimFactor,
+		0.f, BIG_NUMBER);
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(10, 0, FColor::White, FString::Printf(TEXT("Crosshair Spread Multiplier: %f"), CrosshairSpreadMultiplier));
 }
 
 // Called every frame
