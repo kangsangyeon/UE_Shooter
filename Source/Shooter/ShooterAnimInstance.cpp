@@ -31,6 +31,10 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	const FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(Velocity);
 	MovementOffset = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 
+	// 움직일 때에만 Last Movement Offset값을 새로고칩니다.
+	if (ShooterCharacter->GetVelocity().Size() > 0)
+		LastMovementOffset = MovementOffset;
+
 	// Debug
 	const FString AimRotationMessage = FString::Printf(TEXT("Base Aim Rotation: %f"), AimRotation.Yaw);
 	const FString MovementRotationMessage = FString::Printf(TEXT("Movement Rotation: %f"), MovementRotation.Yaw);

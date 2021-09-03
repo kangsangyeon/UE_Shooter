@@ -42,6 +42,16 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsAccelerating;
 
+	/**
+	 * @brief Strafing에 사용되는 OffsetYaw입니다.
+	 * OffsetYaw값은 에임 회전값과 이동 방향 회전값의 Yaw 차이(Offset)입니다.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta= (AllowPrivateAccess = "true"))
 	float MovementOffset;
+
+	/**
+	 * @brief 가장 마지막으로 움직였을 때의 MovementOffset입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float LastMovementOffset;
 };
