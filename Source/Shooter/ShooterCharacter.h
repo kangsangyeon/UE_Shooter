@@ -54,6 +54,13 @@ protected:
 	 */
 	const bool GetBeamEndPoint(const FVector& MuzzleSocketLocation, FVector& OutBeamEndPoint);
 
+
+	/**
+	 * @brief Aiming 버튼을 눌렀는지 떼었는지에 따라 bAiming값을 true 또는 false로 설정합니다.
+	 */
+	void AimingButtonPressed();
+	void AimingButtonReleased();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -117,6 +124,22 @@ private:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	class UParticleSystem* BeamParticles;
+
+	/**
+	 * @brief Aiming중인지에 대한 여부입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bAiming;
+
+	/**
+	 * @brief 기본 카메라 Field of View 값입니다.
+	 */
+	float CameraDefaultFOV;
+
+	/**
+	 * @brief 확대 상태의 카메라 Field of View값입니다.
+	 */
+	float CameraZoomFOV;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
