@@ -11,10 +11,11 @@ Saved
 
 ############
 #Asset Files#
+# Content폴더 내에서 _Game 폴더를 제외한 모든 내용을 제외합니다.
 ###########
 
-Content
-!Content/Game_
+Content/*
+!Content/_Game
 
 ##################
 #VS Generated Files#
