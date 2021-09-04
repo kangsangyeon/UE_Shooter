@@ -36,5 +36,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	class UBoxComponent* CollisionBox;
 
+	/**
+	 * @brief 플레이어가 아이템을 바라볼 때 나타날 Popup widget입니다.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	class UWidgetComponent* PickupWidget; 
+
 public:
 };
