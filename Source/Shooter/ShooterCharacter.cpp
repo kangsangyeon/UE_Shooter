@@ -42,7 +42,10 @@ AShooterCharacter::AShooterCharacter() :
 	CrosshairFiringFactor(0.f),
 	// 총알 발사 타이머 변수
 	FireTimerDuration(.05),
-	bFiring(false)
+	bFiring(false),
+	// 자동 발사 타이머 변수
+	AutoFireRate(0.1f),
+	bShouldFire(true)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -300,6 +303,38 @@ void AShooterCharacter::OnFinishedCrosshairFireTimer()
 	bFiring = false;
 }
 
+void AShooterCharacter::OnFireButtonPressed()
+{
+	bFireButtonPressed = true;
+
+	TryStartAutoFireTimer();
+}
+
+void AShooterCharacter::OnFireButtonReleased()
+{
+	bFireButtonPressed = false;
+}
+
+void AShooterCharacter::TryStartAutoFireTimer()
+{
+	if (bShouldFire == false)
+		return;
+
+	bShouldFire = false;
+
+	FireWeapon();
+
+	GetWorld()->GetTimerManager().SetTimer(AutoFireTimer, this, &AShooterCharacter::OnEndAutoFireTimer, AutoFireRate);
+}
+
+void AShooterCharacter::OnEndAutoFireTimer()
+{
+	bShouldFire = true;
+
+	if (bFireButtonPressed)
+		TryStartAutoFireTimer();
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -328,7 +363,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::OnFireButtonPressed);
+	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Released, this, &AShooterCharacter::OnFireButtonReleased);
 
 	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Released, this, &AShooterCharacter::AimingButtonReleased);

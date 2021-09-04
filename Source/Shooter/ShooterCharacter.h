@@ -86,6 +86,14 @@ protected:
 	UFUNCTION()
 	void OnFinishedCrosshairFireTimer();
 
+	void OnFireButtonPressed();
+	void OnFireButtonReleased();
+
+	void TryStartAutoFireTimer();
+
+	UFUNCTION()
+	void OnEndAutoFireTimer();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -264,6 +272,28 @@ private:
 	bool bFiring;
 
 	FTimerHandle CrosshairFireTimer;
+
+	/**
+	 * @brief 총알 발사 버튼을 누르고 있는중인지에 대한 여부입니다.
+	 */
+	bool bFireButtonPressed;
+
+	/**
+	 * @brief 발사할 수 있는지에 대한 여부입니다.
+	 * true는 지금 당장 발사할 수 있음을 의미합니다.
+	 * 한 번 발사한 뒤 timer가 실행되는데, timer가 종료될 때까지 false값을 가집니다.
+	 */
+	bool bShouldFire;
+
+	/**
+	 * @brief 총알 발사 속도입니다.
+	 */
+	float AutoFireRate;
+
+	/**
+	 * @brief 총알 발사간의 타이머입니다.
+	 */
+	FTimerHandle AutoFireTimer;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
