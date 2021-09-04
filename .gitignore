@@ -26,6 +26,7 @@ Content
 #Misc#
 #################
 
+.idea
 .vscode
 *.VC.db
 *.opensdf
