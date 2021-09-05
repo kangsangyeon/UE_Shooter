@@ -80,7 +80,7 @@ protected:
 	void SetLookRates();
 
 	void CalculateCrosshairSpread(float DeltaTime);
-	
+
 	void StartCrosshairFireTimer();
 
 	UFUNCTION()
@@ -93,6 +93,11 @@ protected:
 
 	UFUNCTION()
 	void OnEndAutoFireTimer();
+
+	/**
+	 * @brief Crosshair 너머로 LineTrace를 실시한 결과를 얻습니다.
+	 */
+	bool TraceUnderCrosshairs(FHitResult& OutHitResult);
 
 public:
 	// Called every frame

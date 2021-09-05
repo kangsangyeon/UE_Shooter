@@ -17,6 +17,8 @@ AItem::AItem()
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment(Mesh);
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(Mesh);
@@ -26,6 +28,10 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Pickup Widget은 플레이어가 가까이 다가갔을 때에만 보여져야 합니다.
+	// 따라서 기본적으로 숨김 처리합니다.	
+	PickupWidget->SetVisibility(false);
 }
 
 // Called every frame

@@ -4,7 +4,9 @@
 #include "ShooterCharacter.h"
 
 #include "DrawDebugHelpers.h"
+#include "Item.h"
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -335,6 +337,34 @@ void AShooterCharacter::OnEndAutoFireTimer()
 		TryStartAutoFireTimer();
 }
 
+bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult)
+{
+	// 현재 Viewport의 크기를 얻어오고, Viewport의 중심에 있는 Crosshair의 위치를 계산합니다.
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport)
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+
+	FVector2D CrosshairViewportPosition{ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
+
+	// Crosshair의 World Position과 Direction을 얻습니다.
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrosshairViewportPosition, CrosshairWorldPosition, CrosshairWorldDirection);
+
+	if (bScreenToWorld)
+	{
+		const FVector ScreenTraceStart{CrosshairWorldPosition};
+		const FVector ScreenTraceEnd{CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f};
+
+		GetWorld()->LineTraceSingleByChannel(OutHitResult, ScreenTraceStart, ScreenTraceEnd, ECollisionChannel::ECC_Visibility);
+		return OutHitResult.bBlockingHit;
+	}
+
+	return false;
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -345,6 +375,19 @@ void AShooterCharacter::Tick(float DeltaTime)
 	SetLookRates();
 
 	CalculateCrosshairSpread(DeltaTime);
+
+	FHitResult ItemTraceResult;
+	TraceUnderCrosshairs(ItemTraceResult);
+	if (ItemTraceResult.bBlockingHit)
+	{
+		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
+		if (HitItem && HitItem->GetPickupWidget())
+		{
+			// 아이템의 Pickup Widget을 표시합니다.
+			HitItem->GetPickupWidget()->SetVisibility(true);
+			
+		}
+	}
 }
 
 // Called to bind functionality to input
