@@ -183,52 +183,33 @@ const bool AShooterCharacter::GetBeamEndPoint(
 	const FVector& MuzzleSocketLocation,
 	FVector& OutBeamEndPoint)
 {
-	// 현재 Viewport의 크기를 얻어오고, Viewport의 중심에 있는 Crosshair의 위치를 계산합니다.
-	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport)
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	// 1차 트레이스를 실시합니다.
+	FHitResult CrosshairHitResult;
+	FVector CrosshairHitLocation;
+	bool bCrosshairHit = TraceUnderCrosshairs(CrosshairHitResult, CrosshairHitLocation);
 
-	FVector2D CrosshairViewportPosition{ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
-
-	// Crosshair의 World Position과 Direction을 얻습니다.
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
-		UGameplayStatics::GetPlayerController(this, 0),
-		CrosshairViewportPosition, CrosshairWorldPosition, CrosshairWorldDirection);
-
-	if (bScreenToWorld)
+	if (bCrosshairHit)
 	{
-		FVector BeamEndPoint;
+		// 1차 트레이스 Hit에 성공하여 2차 트레이스를 실시합니다.
+		// Gun Barrel에서부터 실제로 조준한 방향으로 LineTrace를 실행하여 부딪친 물체가 있는지 판별합니다.
+		const FVector WeaponTraceStart{MuzzleSocketLocation};
+		const FVector WeaponTraceDirection{(CrosshairHitLocation - MuzzleSocketLocation).GetSafeNormal()};
+		// 1차 Trace로 검출한 지점까지 2차 Trace를 실시할 경우
+		// 아주 작은 길이의 차이로 검출될 수 없는 문제가 생길 수 있기 때문에, 약간의 길이를 더합니다.
+		const FVector WeaponTraceEnd{CrosshairHitLocation + WeaponTraceDirection * 1.25f};
 
-		// 1차 트레이스를 실시합니다.
-		// 크로스헤어가 존재하는 가상 지점인 World Position에서 조준하는 방향으로 트레이스합니다.
-		// 이 트레이스 결과로 실제로 사용자가 조준한 지점을 알아낼 수 있습니다.
-		const FVector ScreenTraceStart{CrosshairWorldPosition};
-		const FVector ScreenTraceEnd{CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f};
-		BeamEndPoint = ScreenTraceEnd;
+		FHitResult WeaponTraceHit;
+		GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
 
-		FHitResult ScreenTraceHit;
-		GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, ScreenTraceStart, ScreenTraceEnd, ECollisionChannel::ECC_Visibility);
-		if (ScreenTraceHit.bBlockingHit)
+		// 최종적으로 Gun Barrel으로부터 실시한 LineTrace가 반환되는 결과값으로 사용됩니다.
+		if (WeaponTraceHit.bBlockingHit)
 		{
-			BeamEndPoint = ScreenTraceHit.Location;
-
-			// 1차 트레이스 Hit에 성공하여 2차 트레이스를 실시합니다.
-			// Gun Barrel에서부터 실제로 조준한 방향으로 LineTrace를 실행하여 부딪친 물체가 있는지 판별합니다.
-			const FVector WeaponTraceStart{MuzzleSocketLocation};
-			const FVector WeaponTraceEnd{BeamEndPoint};
-
-			FHitResult WeaponTraceHit;
-			GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-			if (WeaponTraceHit.bBlockingHit)
-				BeamEndPoint = WeaponTraceHit.Location;
+			OutBeamEndPoint = WeaponTraceHit.Location;
+			return true;
 		}
-
-		OutBeamEndPoint = BeamEndPoint;
-		return true;
 	}
 
+	OutBeamEndPoint = CrosshairHitLocation;
 	return false;
 }
 
@@ -337,7 +318,7 @@ void AShooterCharacter::OnEndAutoFireTimer()
 		TryStartAutoFireTimer();
 }
 
-bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult)
+const bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation)
 {
 	// 현재 Viewport의 크기를 얻어오고, Viewport의 중심에 있는 Crosshair의 위치를 계산합니다.
 	FVector2D ViewportSize;
@@ -353,12 +334,18 @@ bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult)
 		UGameplayStatics::GetPlayerController(this, 0),
 		CrosshairViewportPosition, CrosshairWorldPosition, CrosshairWorldDirection);
 
+	// Viewport 좌표 -> World 좌표로 변환이 성공했다면 LineTrace를 실시합니다.
 	if (bScreenToWorld)
 	{
 		const FVector ScreenTraceStart{CrosshairWorldPosition};
 		const FVector ScreenTraceEnd{CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f};
-
 		GetWorld()->LineTraceSingleByChannel(OutHitResult, ScreenTraceStart, ScreenTraceEnd, ECollisionChannel::ECC_Visibility);
+
+		// LineTrace을 실시한 결과 충돌된 무언가가 있다면 OutHitLocation으로 그 충돌 지점을 반환합니다.
+		// 그렇지 않다면 ScreenTraceEnd를 반환합니다.
+		OutHitLocation = OutHitResult.bBlockingHit ? OutHitResult.Location : ScreenTraceEnd;
+
+		// LineTrace에 충돌한 무언가가 있는지에 대한 여부를 반환합니다.
 		return OutHitResult.bBlockingHit;
 	}
 
@@ -377,7 +364,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 	CalculateCrosshairSpread(DeltaTime);
 
 	FHitResult ItemTraceResult;
-	TraceUnderCrosshairs(ItemTraceResult);
+	FVector ItemHitLocation;
+	TraceUnderCrosshairs(ItemTraceResult, ItemHitLocation);
 	if (ItemTraceResult.bBlockingHit)
 	{
 		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
@@ -385,7 +373,6 @@ void AShooterCharacter::Tick(float DeltaTime)
 		{
 			// 아이템의 Pickup Widget을 표시합니다.
 			HitItem->GetPickupWidget()->SetVisibility(true);
-			
 		}
 	}
 }

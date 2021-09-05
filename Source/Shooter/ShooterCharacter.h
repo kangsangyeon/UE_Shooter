@@ -61,7 +61,7 @@ protected:
 	void FireWeapon();
 
 	/**
-	 * @brief Crosshair 너머 바라보는 방향으로 Linecast를 실시하여 충돌한 위치값을 얻어냅니다.
+	 * @brief 총구에서부터 Crosshair 너머 바라보는 방향으로 Linecast를 실시하여 충돌한 위치값을 얻어냅니다.
 	 * 만약 충돌한 오브젝트가 없다면 바라보는 방향으로 먼 거리의 지점이 반환됩니다.
 	 */
 	const bool GetBeamEndPoint(const FVector& MuzzleSocketLocation, FVector& OutBeamEndPoint);
@@ -96,8 +96,11 @@ protected:
 
 	/**
 	 * @brief Crosshair 너머로 LineTrace를 실시한 결과를 얻습니다.
+	 * @param OutHitResult LineTrace를 실시한 결과입니다.
+	 * @param OutHitLocation LineTrace를 실시하여 충돌한 지점입니다. 충돌하지 않았을 경우 BeamEndPoint(바라보는 허공의 지점)이 반환됩니다.
+	 * @return LineTrace를 실시한 결과 충돌한 무언가가 있는지에 대한 여부를 반환합니다.
 	 */
-	bool TraceUnderCrosshairs(FHitResult& OutHitResult);
+	const bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
 
 public:
 	// Called every frame
