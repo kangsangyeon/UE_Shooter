@@ -356,23 +356,52 @@ const bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVe
 
 void AShooterCharacter::TraceForItems()
 {
-	if (GetShouldForItemTrace())
+	// 아무런 아이템도 Trace되어야 하지 않는 상태에서는
+	// 어떠한 아이템의 Widget도 표시하지 않습니다.
+	if (GetShouldForItemTrace() == false)
 	{
-		FHitResult ItemTraceResult;
-		FVector ItemHitLocation;
-		TraceUnderCrosshairs(ItemTraceResult, ItemHitLocation);
-		if (ItemTraceResult.bBlockingHit)
+		if (TraceHitItemLastFrame != nullptr)
 		{
-			AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if (HitItem && HitItem->GetPickupWidget())
-			{
-				FString Message = FString::Printf(TEXT("Hit Component: %s"), *ItemTraceResult.GetComponent()->GetName());
-				GEngine->AddOnScreenDebugMessage(1, 0, FColor::White, Message);
-
-				// 아이템의 Pickup Widget을 표시합니다.
-				HitItem->GetPickupWidget()->SetVisibility(true);
-			}
+			TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+			TraceHitItemLastFrame = nullptr;
 		}
+
+		return;
+	}
+
+	// 아이템과 곂친 상태일 때만 아래 코드가 실행됩니다.
+
+	FHitResult ItemTraceResult;
+	FVector ItemHitLocation;
+	TraceUnderCrosshairs(ItemTraceResult, ItemHitLocation);
+
+	// 바라보고 있는 물체가 있으며
+	// 그 물체가 Widget을 가진 아이템일 때에 Widget을 표시합니다.
+	if (ItemTraceResult.bBlockingHit)
+	{
+		FString Message = FString::Printf(TEXT("Item Trace Hit : %s %s"), *ItemTraceResult.GetActor()->GetName(), *ItemTraceResult.GetComponent()->GetName());
+		GEngine->AddOnScreenDebugMessage(10, 0, FColor::White, Message);
+
+		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
+		if (HitItem && HitItem->GetPickupWidget())
+		{
+			HitItem->GetPickupWidget()->SetVisibility(true);
+
+			// 가장 마지막으로 Trace했던 무기와 현재 프레임에 발견한 무기가 다르다면
+			// 가장 마지막으로 Trace했던 무기의 Widget을 숨깁니다.
+			if (TraceHitItemLastFrame && TraceHitItemLastFrame != HitItem)
+				TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+
+			TraceHitItemLastFrame = HitItem;
+			return;
+		}
+	}
+
+	// 바라보고 있는 아이템이 없다면 어떠한 아이템의 Widget도 표시하지 않습니다.
+	if (TraceHitItemLastFrame != nullptr)
+	{
+		TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+		TraceHitItemLastFrame = nullptr;
 	}
 }
 
