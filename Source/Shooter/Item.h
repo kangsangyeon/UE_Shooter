@@ -70,6 +70,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	class UWidgetComponent* PickupWidget;
 
+	/**
+	 * @brief Pickup Widget에 표시될 아이템의 이름입니다.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	FString ItemName;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 };
