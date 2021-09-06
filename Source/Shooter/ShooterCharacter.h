@@ -102,6 +102,11 @@ protected:
 	 */
 	const bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
 
+	/**
+	 * @brief Tick에서 OverlappedItemCount > 0일 때에만 호출되어 Item Trace를 실시합니다.
+	 */
+	void TraceForItems();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -303,6 +308,12 @@ private:
 	 */
 	FTimerHandle AutoFireTimer;
 
+	/**
+	 * @brief 곂쳐져있는 아이템의 개수입니다.
+	 * 곂쳐있는 아이템의 개수가 0이 아닐 때에만 매 프레임 아이템 Trace를 실시합니다.
+	 */
+	int8 OverlappedItemCount;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
 
@@ -312,4 +323,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
+
+	FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
+
+	FORCEINLINE void IncreaseOverlappedItemCount(int8 Amount) { OverlappedItemCount = FMath::Clamp(OverlappedItemCount + Amount, 0, INT_MAX); }
+
+	FORCEINLINE bool GetShouldForItemTrace() const { return OverlappedItemCount > 0; }
 };

@@ -3,7 +3,9 @@
 
 #include "Item.h"
 
+#include "ShooterCharacter.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 
 // Sets default values
@@ -20,6 +22,10 @@ AItem::AItem()
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
+	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
+	AreaSphere->SetupAttachment(Mesh);
+	AreaSphere->SetSphereRadius(150.f);
+
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(Mesh);
 }
@@ -32,10 +38,44 @@ void AItem::BeginPlay()
 	// Pickup Widget은 플레이어가 가까이 다가갔을 때에만 보여져야 합니다.
 	// 따라서 기본적으로 숨김 처리합니다.	
 	PickupWidget->SetVisibility(false);
+
+	// AreaSphere의 충돌 콜백을 설정합니다.
+	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnAreaSphereBeginOverlap);
+	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnAreaSphereEndOverlap);
 }
 
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AItem::OnAreaSphereBeginOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr)
+		return;
+
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
+	if (ShooterCharacter == nullptr)
+		return;
+
+	ShooterCharacter->IncreaseOverlappedItemCount(1);
+}
+
+void AItem::OnAreaSphereEndOverlap(UPrimitiveComponent* OverllapedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor == nullptr)
+		return;
+
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
+	if (ShooterCharacter == nullptr)
+		return;
+
+	ShooterCharacter->IncreaseOverlappedItemCount(-1);
 }

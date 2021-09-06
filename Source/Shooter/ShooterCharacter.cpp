@@ -47,7 +47,9 @@ AShooterCharacter::AShooterCharacter() :
 	bFiring(false),
 	// 자동 발사 타이머 변수
 	AutoFireRate(0.1f),
-	bShouldFire(true)
+	bShouldFire(true),
+	// 아이템 Trace
+	OverlappedItemCount(0)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -352,6 +354,28 @@ const bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVe
 	return false;
 }
 
+void AShooterCharacter::TraceForItems()
+{
+	if (GetShouldForItemTrace())
+	{
+		FHitResult ItemTraceResult;
+		FVector ItemHitLocation;
+		TraceUnderCrosshairs(ItemTraceResult, ItemHitLocation);
+		if (ItemTraceResult.bBlockingHit)
+		{
+			AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			if (HitItem && HitItem->GetPickupWidget())
+			{
+				FString Message = FString::Printf(TEXT("Hit Component: %s"), *ItemTraceResult.GetComponent()->GetName());
+				GEngine->AddOnScreenDebugMessage(1, 0, FColor::White, Message);
+
+				// 아이템의 Pickup Widget을 표시합니다.
+				HitItem->GetPickupWidget()->SetVisibility(true);
+			}
+		}
+	}
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -363,18 +387,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	CalculateCrosshairSpread(DeltaTime);
 
-	FHitResult ItemTraceResult;
-	FVector ItemHitLocation;
-	TraceUnderCrosshairs(ItemTraceResult, ItemHitLocation);
-	if (ItemTraceResult.bBlockingHit)
-	{
-		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-		if (HitItem && HitItem->GetPickupWidget())
-		{
-			// 아이템의 Pickup Widget을 표시합니다.
-			HitItem->GetPickupWidget()->SetVisibility(true);
-		}
-	}
+	TraceForItems();
 }
 
 // Called to bind functionality to input
