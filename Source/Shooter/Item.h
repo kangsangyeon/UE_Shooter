@@ -6,6 +6,18 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemRarity : uint8
+{
+	EIR_Damaged UMETA(DisplayName = "Damaged"),
+	EIR_Common UMETA(DisplayName = "Common"),
+	EIR_Rare UMETA(DisplayName = "Rare"),
+	EIR_Epic UMETA(DisplayName = "Epic"),
+	EIR_Legendary UMETA(DisplayName = "Legendary"),
+
+	EIR_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SHOOTER_API AItem : public AActor
 {
@@ -76,6 +88,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	FString ItemName;
 
+	/**
+	 * @brief 아이템의 희소성입니다. Pickup Widget에 표시될 별의 개수를 결정합니다.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	EItemRarity ItemRarity;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
+
+	UFUNCTION(BlueprintCallable)
+	TArray<bool> GetActiveStarsOfRarity() const;
 };

@@ -10,7 +10,8 @@
 
 // Sets default values
 AItem::AItem() :
-	ItemName(FString("Default"))
+	ItemName(FString("Default")),
+	ItemRarity(EItemRarity::EIR_Common)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -79,4 +80,29 @@ void AItem::OnAreaSphereEndOverlap(UPrimitiveComponent* OverllapedComponent, AAc
 		return;
 
 	ShooterCharacter->IncreaseOverlappedItemCount(-1);
+}
+
+TArray<bool> AItem::GetActiveStarsOfRarity() const
+{
+	TArray<bool> ActiveStars;
+	for (int i = 0; i <= 5; i++)
+		ActiveStars.Add(false);
+
+	switch (ItemRarity)
+	{
+	case EItemRarity::EIR_Legendary:
+		ActiveStars[5] = true;
+	case EItemRarity::EIR_Epic:
+		ActiveStars[4] = true;
+	case EItemRarity::EIR_Rare:
+		ActiveStars[3] = true;
+	case EItemRarity::EIR_Common:
+		ActiveStars[2] = true;
+	case EItemRarity::EIR_Damaged:
+		ActiveStars[1] = true;
+
+		// 배열의 [0] 요소는 항상 false로 설정되어있으며, 사용하지 않을 것입니다.
+	}
+
+	return ActiveStars;
 }
