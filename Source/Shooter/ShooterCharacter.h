@@ -107,6 +107,8 @@ protected:
 	 */
 	void TraceForItems();
 
+	void SpawnDefaultWeapon();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -316,6 +318,18 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess="true"))
 	class AItem* TraceHitItemLastFrame;
+
+	/**
+	* @brief 장착하고 있는 무기입니다.
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	class AWeapon* EquippedWeapon;
+
+	/**
+	* @brief 게임이 시작될 때 기본적으로 장착될 무기의 클래스입니다.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	TSubclassOf<class AWeapon> DefaultWeaponClass;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };

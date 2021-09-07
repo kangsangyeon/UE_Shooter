@@ -5,6 +5,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Item.h"
+#include "Weapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -90,6 +91,8 @@ void AShooterCharacter::BeginPlay()
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
+
+	SpawnDefaultWeapon();
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -403,6 +406,26 @@ void AShooterCharacter::TraceForItems()
 		TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
 		TraceHitItemLastFrame = nullptr;
 	}
+}
+
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+	// 기본 장착될 무기의 클래스가 정해져있는지 확인합니다.
+	if (DefaultWeaponClass == nullptr)
+		return;
+
+	// 무기를 스폰합니다.
+	AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+
+	// Hand 소켓을 얻어옵니다.
+	const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+	if (RightHandSocket == nullptr)
+		return;
+
+	// Hand 소켓에 스폰한 무기를 붙입니다.
+	RightHandSocket->AttachActor(DefaultWeapon, GetMesh());
+
+	EquippedWeapon = DefaultWeapon;
 }
 
 // Called every frame
