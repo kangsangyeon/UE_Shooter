@@ -89,6 +89,12 @@ private:
 	FString ItemName;
 
 	/**
+	 * @brief 아이템 개수입니다. (총알, 기타 등..)
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	int32 ItemCount;
+
+	/**
 	 * @brief 아이템의 희소성입니다. Pickup Widget에 표시될 별의 개수를 결정합니다.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
