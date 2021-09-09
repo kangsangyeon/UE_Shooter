@@ -83,6 +83,14 @@ void AItem::OnAreaSphereEndOverlap(UPrimitiveComponent* OverllapedComponent, AAc
 	ShooterCharacter->IncreaseOverlappedItemCount(-1);
 }
 
+void AItem::SetEnableCollision(bool Enable)
+{
+	ECollisionEnabled::Type EnabledType = Enable ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision;
+
+	CollisionBox->SetCollisionEnabled(EnabledType);
+	AreaSphere->SetCollisionEnabled(EnabledType);
+}
+
 TArray<bool> AItem::GetActiveStarsOfRarity() const
 {
 	TArray<bool> ActiveStars;

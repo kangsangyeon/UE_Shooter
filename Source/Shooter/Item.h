@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
@@ -56,6 +58,12 @@ public:
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+
+	/**
+	 * @brief Item의 모든 Collision의 Enable을 설정합니다.
+	 * 주로 아이템을 획득했을 때 false로 설정하거나, 필드에 떨어져 다시 주울 수 있는 상태로 되돌릴 때 true로 설정합니다.
+	 */
+	void SetEnableCollision(bool Enable);
 
 private:
 	/**

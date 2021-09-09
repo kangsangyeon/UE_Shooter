@@ -107,7 +107,15 @@ protected:
 	 */
 	void TraceForItems();
 
-	void SpawnDefaultWeapon();
+	/**
+	 * @brief 기본 무기를 스폰합니다.
+	 */
+	class AWeapon* SpawnDefaultWeapon() const;
+
+	/**
+	 * @brief 무기를 장착합니다.
+	 */
+	void EquipWeapon(class AWeapon* WeaponToEquip);
 
 public:
 	// Called every frame

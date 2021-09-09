@@ -3,6 +3,7 @@
 
 #include "ShooterCharacter.h"
 
+#include "AIController.h"
 #include "DrawDebugHelpers.h"
 #include "Item.h"
 #include "Weapon.h"
@@ -92,7 +93,8 @@ void AShooterCharacter::BeginPlay()
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
 
-	SpawnDefaultWeapon();
+	// 기본 무기를 스폰하고 장착합니다.
+	EquipWeapon(SpawnDefaultWeapon());
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -408,14 +410,22 @@ void AShooterCharacter::TraceForItems()
 	}
 }
 
-void AShooterCharacter::SpawnDefaultWeapon()
+AWeapon* AShooterCharacter::SpawnDefaultWeapon() const
 {
 	// 기본 장착될 무기의 클래스가 정해져있는지 확인합니다.
 	if (DefaultWeaponClass == nullptr)
-		return;
+		return nullptr;
 
 	// 무기를 스폰합니다.
 	AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+
+	return DefaultWeapon;
+}
+
+void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (WeaponToEquip == nullptr)
+		return;
 
 	// Hand 소켓을 얻어옵니다.
 	const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
@@ -423,9 +433,12 @@ void AShooterCharacter::SpawnDefaultWeapon()
 		return;
 
 	// Hand 소켓에 스폰한 무기를 붙입니다.
-	RightHandSocket->AttachActor(DefaultWeapon, GetMesh());
+	RightHandSocket->AttachActor(WeaponToEquip, GetMesh());
 
-	EquippedWeapon = DefaultWeapon;
+	// Weapon의 충돌 검사를 끕니다.
+	WeaponToEquip->SetEnableCollision(false);
+
+	EquippedWeapon = WeaponToEquip;
 }
 
 // Called every frame
