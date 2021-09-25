@@ -46,6 +46,9 @@ void AItem::BeginPlay()
 	// AreaSphere의 충돌 콜백을 설정합니다.
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnAreaSphereBeginOverlap);
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnAreaSphereEndOverlap);
+
+	// Item의 상태에 따라 속성을 설정합니다.
+	SetItemProperties(ItemState);
 }
 
 // Called every frame
@@ -90,6 +93,51 @@ void AItem::SetEnableCollision(bool Enable)
 
 	CollisionBox->SetCollisionEnabled(EnabledType);
 	AreaSphere->SetCollisionEnabled(EnabledType);
+}
+
+void AItem::SetItemProperties(EItemState State)
+{
+	switch (State)
+	{
+	case EItemState::EIS_Pickup:
+		// Mesh의 속성을 설정합니다.
+		Mesh->SetSimulatePhysics(false);
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// AreaSphere의 속성을 설정합니다.
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+		// CollisionBox의 속성을 설정합니다.
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		break;
+	case EItemState::EIS_Equipped:
+		// Mesh의 속성을 설정합니다.
+		Mesh->SetSimulatePhysics(false);
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// AreaSphere의 속성을 설정합니다.
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
+		// CollisionBox의 속성을 설정합니다.
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	}
+}
+
+void AItem::SetItemState(EItemState State)
+{
+	ItemState = State;
+	SetItemProperties(State);
 }
 
 TArray<bool> AItem::GetActiveStarsOfRarity() const

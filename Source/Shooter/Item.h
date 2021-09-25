@@ -77,6 +77,11 @@ public:
 	 */
 	void SetEnableCollision(bool Enable);
 
+	/**
+	 * @brief State에 따라 Item의 컴포넌트들의 속성을 변경합니다.
+	 */
+	void SetItemProperties(EItemState State);
+
 private:
 	/**
 	* @brief Item의 Skeletal Mesh입니다.
@@ -129,7 +134,7 @@ private:
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
-	FORCEINLINE void SetItemState(EItemState State) { ItemState = State; }
+	void SetItemState(EItemState State);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<bool> GetActiveStarsOfRarity() const;

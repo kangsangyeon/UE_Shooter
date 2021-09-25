@@ -435,9 +435,7 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
 	// Hand 소켓에 스폰한 무기를 붙입니다.
 	RightHandSocket->AttachActor(WeaponToEquip, GetMesh());
 
-	// Weapon의 충돌 검사를 끕니다.
-	WeaponToEquip->SetEnableCollision(false);
-
+	// WeaponToEquipped을 장착합니다.
 	EquippedWeapon = WeaponToEquip;
 	WeaponToEquip->SetItemState(EItemState::EIS_Equipped);
 }
