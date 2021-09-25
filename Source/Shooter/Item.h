@@ -20,6 +20,18 @@ enum class EItemRarity : uint8
 	EIR_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	EIS_Pickup UMETA(DisplayName = "Pickup"),
+	EIS_EquipInterping UMETA(DisplayName = "EquipInterping"),
+	EIS_PickedUp UMETA(DisplayName = "PickedUp"),
+	EIS_Equipped UMETA(DisplayName = "Equipped"),
+	EIS_Falling UMETA(DisplayName = "Falling"),
+
+	EIS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SHOOTER_API AItem : public AActor
 {
@@ -108,8 +120,16 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	EItemRarity ItemRarity;
 
+	/**
+	 * @brief 아이템의 상태입니다.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	EItemState ItemState;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
+	FORCEINLINE EItemState GetItemState() const { return ItemState; }
+	FORCEINLINE void SetItemState(EItemState State) { ItemState = State; }
 
 	UFUNCTION(BlueprintCallable)
 	TArray<bool> GetActiveStarsOfRarity() const;

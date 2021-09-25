@@ -439,6 +439,7 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
 	WeaponToEquip->SetEnableCollision(false);
 
 	EquippedWeapon = WeaponToEquip;
+	WeaponToEquip->SetItemState(EItemState::EIS_Equipped);
 }
 
 // Called every frame
