@@ -134,6 +134,12 @@ void AItem::SetItemProperties(EItemState State)
 	}
 }
 
+void AItem::DetachFromParent()
+{
+	FDetachmentTransformRules DetachmentTransformRules{EDetachmentRule::KeepWorld, true};
+	Mesh->DetachFromComponent(DetachmentTransformRules);
+}
+
 void AItem::SetItemState(EItemState State)
 {
 	ItemState = State;

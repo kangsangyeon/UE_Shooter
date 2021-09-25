@@ -440,6 +440,24 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
 	WeaponToEquip->SetItemState(EItemState::EIS_Equipped);
 }
 
+void AShooterCharacter::DropWeapon()
+{
+	if (EquippedWeapon == nullptr)
+		return;
+
+	EquippedWeapon->DetachFromParent();
+	EquippedWeapon = nullptr;
+}
+
+void AShooterCharacter::InteractButtonPressed()
+{
+	DropWeapon();
+}
+
+void AShooterCharacter::InteractButtonReleased()
+{
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -475,6 +493,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Released, this, &AShooterCharacter::AimingButtonReleased);
+
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &AShooterCharacter::InteractButtonPressed);
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Released, this, &AShooterCharacter::InteractButtonReleased);
 }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const

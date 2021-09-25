@@ -117,6 +117,13 @@ protected:
 	 */
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 
+	/**
+	 * @brief 장착중인 무기를 떼어내고 땅에 떨어뜨립니다.
+	 */
+	void DropWeapon();
+
+	void InteractButtonPressed();
+	void InteractButtonReleased();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
