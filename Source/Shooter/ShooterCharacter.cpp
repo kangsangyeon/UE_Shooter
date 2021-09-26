@@ -51,7 +51,9 @@ AShooterCharacter::AShooterCharacter() :
 	AutoFireRate(0.1f),
 	bShouldFire(true),
 	// 아이템 Trace
-	OverlappedItemCount(0)
+	OverlappedItemCount(0),
+	// 아이템 Interp
+	ItemInterpDesiredOffset(FVector{250.f, 0.f, 60.f})
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -515,4 +517,16 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const
 {
 	return CrosshairSpreadMultiplier;
+}
+
+FVector AShooterCharacter::GetItemInterpDesiredDestination() const
+{
+	const FVector CameraWorldLocation{FollowCamera->GetComponentLocation()};
+	const FVector CameraForward{FollowCamera->GetForwardVector()};
+	const FVector CameraRight{FollowCamera->GetRightVector()};
+
+	return CameraWorldLocation
+		+ CameraForward * ItemInterpDesiredOffset.X
+		+ CameraRight * ItemInterpDesiredOffset.Y
+		+ FVector{0.f, 0.f, ItemInterpDesiredOffset.Z};
 }

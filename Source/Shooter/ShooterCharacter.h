@@ -351,6 +351,12 @@ private:
 	AItem* TraceHitItem;
 
 	/**
+	 * @brief Item Interp가 진행될 때 카메라로부터 얼만큼 떨어져있는 곳으로 이동되기를 원하는지에 대한 값입니다.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Items", meta=(AllowPrivateAccess="true"))
+	FVector ItemInterpDesiredOffset;
+
+	/**
 	* @brief 장착하고 있는 무기입니다.
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
@@ -377,4 +383,6 @@ public:
 	FORCEINLINE void IncreaseOverlappedItemCount(int8 Amount) { OverlappedItemCount = FMath::Clamp(OverlappedItemCount + Amount, 0, INT_MAX); }
 
 	FORCEINLINE bool GetShouldForItemTrace() const { return OverlappedItemCount > 0; }
+
+	FVector GetItemInterpDesiredDestination() const;
 };
