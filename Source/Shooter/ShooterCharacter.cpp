@@ -459,8 +459,7 @@ void AShooterCharacter::InteractButtonPressed()
 {
 	if (TraceHitItem)
 	{
-		AWeapon* TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
-		SwapWeapon(TraceHitWeapon);
+		TraceHitItem->StartItemInterp(this);
 	}
 }
 

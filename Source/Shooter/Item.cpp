@@ -59,6 +59,9 @@ void AItem::BeginPlay()
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 아이템이 EquipInterping 상태일 때 Interp합니다.
+	ItemInterp(DeltaTime);
 }
 
 void AItem::OnAreaSphereBeginOverlap(
@@ -145,6 +148,25 @@ void AItem::FinishItemInterp()
 		Character->GetPickupItem(this);
 
 	bInterping = false;
+	// SetItemState(EItemState::EIS_Falling);
+}
+
+void AItem::ItemInterp(float DeltaTime)
+{
+	if (bInterping == false)
+		return;
+
+	if (Character == nullptr || ItemZCurve == nullptr)
+		return;
+
+	const FVector ItemInterpDesiredLocation = FVector{Character->GetItemInterpDesiredDestination()};
+	const float ItemToCameraZ = (ItemInterpDesiredLocation - ItemInterpStartLocation).Z;
+
+	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(ItemInterpTimer);
+	const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
+
+	const FVector ItemLocation = FVector{ItemInterpStartLocation.X, ItemInterpStartLocation.Y, ItemToCameraZ * CurveValue};
+	SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
 }
 
 void AItem::SetItemPropertiesPickupState()

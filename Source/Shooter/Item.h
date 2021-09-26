@@ -105,6 +105,11 @@ protected:
 	 */
 	void FinishItemInterp();
 
+	/**
+	 * @brief 아이템이 Interping 상태일 때 매 프레임 호출되어 Interp를 다룹니다.
+	 */
+	void ItemInterp(float DeltaTime);
+
 protected:
 	/**
 	* @brief Item의 Skeletal Mesh입니다.
