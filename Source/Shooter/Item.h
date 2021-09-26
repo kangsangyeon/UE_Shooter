@@ -88,7 +88,7 @@ public:
 	 */
 	void BeDropped();
 
-private:
+protected:
 	/**
 	* @brief Item의 Skeletal Mesh입니다.
 	*/
