@@ -445,7 +445,7 @@ void AShooterCharacter::DropWeapon()
 	if (EquippedWeapon == nullptr)
 		return;
 
-	EquippedWeapon->DetachFromParent();
+	EquippedWeapon->BeDropped();
 	EquippedWeapon = nullptr;
 }
 

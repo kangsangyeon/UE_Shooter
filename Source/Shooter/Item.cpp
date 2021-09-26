@@ -102,6 +102,7 @@ void AItem::SetItemProperties(EItemState State)
 	case EItemState::EIS_Pickup:
 		// Mesh의 속성을 설정합니다.
 		Mesh->SetSimulatePhysics(false);
+		Mesh->SetEnableGravity(false);
 		Mesh->SetVisibility(true);
 		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -118,6 +119,7 @@ void AItem::SetItemProperties(EItemState State)
 	case EItemState::EIS_Equipped:
 		// Mesh의 속성을 설정합니다.
 		Mesh->SetSimulatePhysics(false);
+		Mesh->SetEnableGravity(false);
 		Mesh->SetVisibility(true);
 		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -131,13 +133,34 @@ void AItem::SetItemProperties(EItemState State)
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
+	case EItemState::EIS_Falling:
+		// Mesh의 속성을 설정합니다.
+		Mesh->SetSimulatePhysics(true);
+		Mesh->SetEnableGravity(true);
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+
+		// AreaSphere의 속성을 설정합니다.
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// CollisionBox의 속성을 설정합니다.
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
 	}
 }
 
-void AItem::DetachFromParent()
+void AItem::BeDropped()
 {
+	// 아이템을 장착되어 있던 부모 컴포넌트로부터 떼어냅니다.
 	FDetachmentTransformRules DetachmentTransformRules{EDetachmentRule::KeepWorld, true};
 	Mesh->DetachFromComponent(DetachmentTransformRules);
+
+	// 아이템은 그대로 떨어지는 상태가 됩니다.
+	SetItemState(EItemState::EIS_Falling);
 }
 
 void AItem::SetItemState(EItemState State)

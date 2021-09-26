@@ -86,7 +86,7 @@ public:
 	 * @brief 부모 액터로부터 떨어지기 위해 사용하는 메소드입니다.
 	 * 주로 장착하는 아이템을 떨어뜨릴 때 호출하게 됩니다.
 	 */
-	void DetachFromParent();
+	void BeDropped();
 
 private:
 	/**
