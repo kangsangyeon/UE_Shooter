@@ -17,7 +17,9 @@ AItem::AItem() :
 	ItemZCurveTime(0.7f),
 	ItemInterpStartLocation(FVector::ZeroVector),
 	ItemInterpTargetLocation(FVector::ZeroVector),
-	bInterping(false)
+	bInterping(false),
+	ItemInterpX(0.f),
+	ItemInterpY(0.f)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -159,13 +161,22 @@ void AItem::ItemInterp(float DeltaTime)
 	if (Character == nullptr || ItemZCurve == nullptr)
 		return;
 
+	// 이번 프레임에 이동할 목적지 Z 위치를 계산합니다.
 	const FVector ItemInterpDesiredLocation = FVector{Character->GetItemInterpDesiredDestination()};
 	const float ItemToCameraZ = (ItemInterpDesiredLocation - ItemInterpStartLocation).Z;
 
 	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(ItemInterpTimer);
 	const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
 
-	const FVector ItemLocation = FVector{ItemInterpStartLocation.X, ItemInterpStartLocation.Y, ItemToCameraZ * CurveValue};
+	const float InterpZValue = ItemToCameraZ * CurveValue;
+
+	// 이번 프레임에 이동할 목적지 X Y 위치를 계산합니다.
+	const FVector CurrentLocation = GetActorLocation();
+	const float InterpXValue = FMath::FInterpTo(CurrentLocation.X, ItemInterpDesiredLocation.X, DeltaTime, 30.f);
+	const float InterpYValue = FMath::FInterpTo(CurrentLocation.Y, ItemInterpDesiredLocation.Y, DeltaTime, 30.f);
+
+	// 액터의 위치를 설정합니다.
+	const FVector ItemLocation = FVector{InterpXValue, InterpYValue, InterpZValue};
 	SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
 }
 

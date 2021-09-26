@@ -194,6 +194,10 @@ protected:
 	 */
 	FTimerHandle ItemInterpTimer;
 
+	// EquipInterping 상태일 때 사용되는 X와 Y 값입니다.
+	float ItemInterpX;
+	float ItemInterpY;
+
 	/**
 	 * @brief 캐릭터 레퍼런스입니다.
 	 */
