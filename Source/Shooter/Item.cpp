@@ -112,6 +112,9 @@ void AItem::SetItemProperties(EItemState State)
 	case EItemState::EIS_Falling:
 		SetItemPropertiesFallingState();
 		break;
+	case EItemState::EIS_EquipInterping:
+		SetItemPropertiesEquipInterpingState();
+		break;
 	}
 }
 
@@ -165,6 +168,24 @@ void AItem::SetItemPropertiesPickupState()
 
 void AItem::SetItemPropertiesEquipInterpingState()
 {
+	// Mesh의 속성을 설정합니다.
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetEnableGravity(false);
+	Mesh->SetVisibility(true);
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// AreaSphere의 속성을 설정합니다.
+	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
+	// CollisionBox의 속성을 설정합니다.
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// PickupWidget의 속성을 설정합니다.
+	PickupWidget->SetVisibility(false);
 }
 
 void AItem::SetItemPropertiesPickedUpState()
