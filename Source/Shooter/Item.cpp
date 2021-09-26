@@ -165,6 +165,9 @@ void AItem::SetItemPropertiesEquippedState()
 	// CollisionBox의 속성을 설정합니다.
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// PickupWidget의 속성을 설정합니다.
+	PickupWidget->SetVisibility(false);
 }
 
 void AItem::SetItemPropertiesFallingState()

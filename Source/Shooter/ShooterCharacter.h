@@ -124,6 +124,11 @@ protected:
 
 	void InteractButtonPressed();
 	void InteractButtonReleased();
+
+	/**
+	 * @brief 현재 장착중인 무기를 버리고 TraceHitItem을 새로 장착합니다.
+	 */
+	void SwapWeapon(AWeapon* WeaponToSwap);
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -331,8 +336,19 @@ private:
 	 */
 	int8 OverlappedItemCount;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess="true"))
+	/**
+	 * @brief 직전 프레임에 LineTrace를 실시하여 검출된 아이템입니다.
+	 * 지난 프레임에서 아이템을 바라보고 있지 않았다면 nullptr입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Items", meta = (AllowPrivateAccess="true"))
 	class AItem* TraceHitItemLastFrame;
+
+	/**
+	* @brief 이번 프레임에 LineTrace를 실시하여 검출된 아이템입니다.
+	* 아이템을 바라보고 있지 않을 때 nullptr입니다.
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Items", meta=(AllowPrivateAccess="true"))
+	AItem* TraceHitItem;
 
 	/**
 	* @brief 장착하고 있는 무기입니다.

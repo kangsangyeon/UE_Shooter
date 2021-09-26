@@ -361,6 +361,11 @@ const bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVe
 
 void AShooterCharacter::TraceForItems()
 {
+	// Trace를 앞서 TraceHitLastFrame과 TraceHitItem을 초기화합니다.
+	TraceHitItemLastFrame = TraceHitItem;
+	TraceHitItem = nullptr;
+
+
 	// 아무런 아이템도 Trace되어야 하지 않는 상태에서는
 	// 어떠한 아이템의 Widget도 표시하지 않습니다.
 	if (GetShouldForItemTrace() == false)
@@ -387,17 +392,16 @@ void AShooterCharacter::TraceForItems()
 		FString Message = FString::Printf(TEXT("Item Trace Hit : %s %s"), *ItemTraceResult.GetActor()->GetName(), *ItemTraceResult.GetComponent()->GetName());
 		GEngine->AddOnScreenDebugMessage(10, 0, FColor::White, Message);
 
-		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-		if (HitItem && HitItem->GetPickupWidget())
+		TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+		if (TraceHitItem && TraceHitItem->GetPickupWidget())
 		{
-			HitItem->GetPickupWidget()->SetVisibility(true);
+			TraceHitItem->GetPickupWidget()->SetVisibility(true);
 
 			// 가장 마지막으로 Trace했던 무기와 현재 프레임에 발견한 무기가 다르다면
 			// 가장 마지막으로 Trace했던 무기의 Widget을 숨깁니다.
-			if (TraceHitItemLastFrame && TraceHitItemLastFrame != HitItem)
+			if (TraceHitItemLastFrame && TraceHitItemLastFrame != TraceHitItem)
 				TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
 
-			TraceHitItemLastFrame = HitItem;
 			return;
 		}
 	}
@@ -451,11 +455,21 @@ void AShooterCharacter::DropWeapon()
 
 void AShooterCharacter::InteractButtonPressed()
 {
-	DropWeapon();
+	if (TraceHitItem)
+	{
+		AWeapon* TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
+		SwapWeapon(TraceHitWeapon);
+	}
 }
 
 void AShooterCharacter::InteractButtonReleased()
 {
+}
+
+void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
+{
+	DropWeapon();
+	EquipWeapon(WeaponToSwap);
 }
 
 // Called every frame
