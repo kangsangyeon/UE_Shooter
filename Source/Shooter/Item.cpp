@@ -168,7 +168,7 @@ void AItem::ItemInterp(float DeltaTime)
 	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(ItemInterpTimer);
 	const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
 
-	const float InterpZValue = ItemToCameraZ * CurveValue;
+	const float InterpZValue = ItemInterpStartLocation.Z + ItemToCameraZ * CurveValue;
 
 	// 이번 프레임에 이동할 목적지 X Y 위치를 계산합니다.
 	const FVector CurrentLocation = GetActorLocation();
