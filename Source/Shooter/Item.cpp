@@ -128,9 +128,9 @@ void AItem::BeDropped()
 	SetItemState(EItemState::EIS_Falling);
 }
 
-void AItem::StartItemInterp(AShooterCharacter* Character)
+void AItem::StartItemInterp(AShooterCharacter* Char)
 {
-	this->Character = Character;
+	this->Character = Char;
 
 	bInterping = true;
 	ItemInterpStartLocation = GetActorLocation();

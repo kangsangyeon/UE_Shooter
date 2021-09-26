@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ShooterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
@@ -92,7 +91,7 @@ public:
 	/**
 	 * @brief Item Interp를 시작할 때 호출합니다.
 	 */
-	void StartItemInterp(AShooterCharacter* Character);
+	void StartItemInterp(class AShooterCharacter* Char);
 
 protected:
 	virtual void SetItemPropertiesPickupState();
