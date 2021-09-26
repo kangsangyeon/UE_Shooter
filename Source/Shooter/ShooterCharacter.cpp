@@ -446,7 +446,6 @@ void AShooterCharacter::DropWeapon()
 		return;
 
 	EquippedWeapon->BeDropped();
-	EquippedWeapon->ThrowWeapon();
 	EquippedWeapon = nullptr;
 }
 

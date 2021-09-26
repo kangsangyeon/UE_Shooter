@@ -100,55 +100,13 @@ void AItem::SetItemProperties(EItemState State)
 	switch (State)
 	{
 	case EItemState::EIS_Pickup:
-		// Mesh의 속성을 설정합니다.
-		Mesh->SetSimulatePhysics(false);
-		Mesh->SetEnableGravity(false);
-		Mesh->SetVisibility(true);
-		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-		// AreaSphere의 속성을 설정합니다.
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-		// CollisionBox의 속성을 설정합니다.
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		SetItemPropertiesPickupState();
 		break;
 	case EItemState::EIS_Equipped:
-		// Mesh의 속성을 설정합니다.
-		Mesh->SetSimulatePhysics(false);
-		Mesh->SetEnableGravity(false);
-		Mesh->SetVisibility(true);
-		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-		// AreaSphere의 속성을 설정합니다.
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-
-		// CollisionBox의 속성을 설정합니다.
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SetItemPropertiesEquippedState();
 		break;
 	case EItemState::EIS_Falling:
-		// Mesh의 속성을 설정합니다.
-		Mesh->SetSimulatePhysics(true);
-		Mesh->SetEnableGravity(true);
-		Mesh->SetVisibility(true);
-		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-
-		// AreaSphere의 속성을 설정합니다.
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-		// CollisionBox의 속성을 설정합니다.
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SetItemPropertiesFallingState();
 		break;
 	}
 }
@@ -161,6 +119,71 @@ void AItem::BeDropped()
 
 	// 아이템은 그대로 떨어지는 상태가 됩니다.
 	SetItemState(EItemState::EIS_Falling);
+}
+
+void AItem::SetItemPropertiesPickupState()
+{
+	// Mesh의 속성을 설정합니다.
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetEnableGravity(false);
+	Mesh->SetVisibility(true);
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// AreaSphere의 속성을 설정합니다.
+	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	// CollisionBox의 속성을 설정합니다.
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AItem::SetItemPropertiesEquipInterpingState()
+{
+}
+
+void AItem::SetItemPropertiesPickedUpState()
+{
+}
+
+void AItem::SetItemPropertiesEquippedState()
+{
+	// Mesh의 속성을 설정합니다.
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetEnableGravity(false);
+	Mesh->SetVisibility(true);
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// AreaSphere의 속성을 설정합니다.
+	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
+	// CollisionBox의 속성을 설정합니다.
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AItem::SetItemPropertiesFallingState()
+{
+	// Mesh의 속성을 설정합니다.
+	Mesh->SetSimulatePhysics(true);
+	Mesh->SetEnableGravity(true);
+	Mesh->SetVisibility(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+
+	// AreaSphere의 속성을 설정합니다.
+	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// CollisionBox의 속성을 설정합니다.
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AItem::SetItemState(EItemState State)

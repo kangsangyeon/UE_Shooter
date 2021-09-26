@@ -22,7 +22,14 @@ void AWeapon::Tick(float DeltaTime)
 	}
 }
 
-void AWeapon::ThrowWeapon()
+void AWeapon::BeDropped()
+{
+	Super::BeDropped();
+
+	BeThrown();
+}
+
+void AWeapon::BeThrown()
 {
 	const FRotator MeshRotation{0.f, Mesh->GetComponentRotation().Yaw, 0.f};
 	Mesh->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);

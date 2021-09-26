@@ -18,9 +18,11 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void ThrowWeapon();
-	
+	virtual void BeDropped() override;
+
 protected:
+	void BeThrown();
+
 	void StopFalling();
 
 private:
