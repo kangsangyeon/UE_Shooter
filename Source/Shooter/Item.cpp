@@ -150,7 +150,6 @@ void AItem::FinishItemInterp()
 		Character->GetPickupItem(this);
 
 	bInterping = false;
-	// SetItemState(EItemState::EIS_Falling);
 }
 
 void AItem::ItemInterp(float DeltaTime)
