@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ShooterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
@@ -88,12 +89,22 @@ public:
 	 */
 	virtual void BeDropped();
 
+	/**
+	 * @brief Item Interp를 시작할 때 호출합니다.
+	 */
+	void StartItemInterp(AShooterCharacter* Character);
+
 protected:
 	virtual void SetItemPropertiesPickupState();
 	virtual void SetItemPropertiesEquipInterpingState();
 	virtual void SetItemPropertiesPickedUpState();
 	virtual void SetItemPropertiesEquippedState();
 	virtual void SetItemPropertiesFallingState();
+
+	/**
+	 * @brief ItemInterpTimer가 종료될 때 호출됩니다.
+	 */
+	void FinishItemInterp();
 
 protected:
 	/**
@@ -149,6 +160,41 @@ protected:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	class UCurveFloat* ItemZCurve;
+
+	/**
+	 * @brief ItemZCurve의 시간 길이입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	float ItemZCurveTime;
+
+	/**
+	 * @brief Item Interp가 시작되었을 때 시작 위치입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	FVector ItemInterpStartLocation;
+
+	/**
+	 * @brief Item Interp상태일 때의 목적지 위치입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	FVector ItemInterpTargetLocation;
+
+	/**
+	 * @brief Interp 중인지에 대한 여부입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	bool bInterping;
+
+	/**
+	 * @brief Item Interp가 시작되었을 때 시작시키는 타이머입니다.
+	 */
+	FTimerHandle ItemInterpTimer;
+
+	/**
+	 * @brief 캐릭터 레퍼런스입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	class AShooterCharacter* Character;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }

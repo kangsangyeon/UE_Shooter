@@ -13,7 +13,11 @@ AItem::AItem() :
 	ItemName(FString("Default")),
 	ItemCount(0),
 	ItemRarity(EItemRarity::EIR_Common),
-	ItemState(EItemState::EIS_Pickup)
+	ItemState(EItemState::EIS_Pickup),
+	ItemZCurveTime(0.7f),
+	ItemInterpStartLocation(FVector::ZeroVector),
+	ItemInterpTargetLocation(FVector::ZeroVector),
+	bInterping(false)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -119,6 +123,25 @@ void AItem::BeDropped()
 
 	// 아이템은 그대로 떨어지는 상태가 됩니다.
 	SetItemState(EItemState::EIS_Falling);
+}
+
+void AItem::StartItemInterp(AShooterCharacter* Character)
+{
+	this->Character = Character;
+
+	bInterping = true;
+	ItemInterpStartLocation = GetActorLocation();
+	SetItemState(EItemState::EIS_EquipInterping);
+
+	GetWorld()->GetTimerManager().SetTimer(ItemInterpTimer, this, &AItem::FinishItemInterp, ItemZCurveTime);
+}
+
+void AItem::FinishItemInterp()
+{
+	if (Character)
+		Character->GetPickupItem(this);
+
+	bInterping = false;
 }
 
 void AItem::SetItemPropertiesPickupState()
