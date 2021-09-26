@@ -144,6 +144,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	EItemState ItemState;
 
+	/**
+	 * @brief 아이템이 Interp상태일 때 Z위치를 결정하기 위해 사용되는 curve 애셋입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	class UCurveFloat* ItemZCurve;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
