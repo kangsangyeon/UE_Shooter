@@ -136,6 +136,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void GetPickupItem(class AItem* Item);
+
 private:
 	/*
 	 * CameraBoom은 캐릭터 뒤에서 카메라의 위치를 조정하는 컴포넌트입니다.
