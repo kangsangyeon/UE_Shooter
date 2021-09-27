@@ -35,7 +35,7 @@ private:
 	/**
 	 * @brief 무기에 포함되어 있는 탄약 개수입니다.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
 	int32 AmmoCount;
 
 public:
