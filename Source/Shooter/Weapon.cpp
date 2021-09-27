@@ -5,7 +5,8 @@
 
 AWeapon::AWeapon() :
 	ThrowWeaponTime(.7f),
-	bFalling(false)
+	bFalling(false),
+	AmmoCount(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -56,4 +57,12 @@ void AWeapon::StopFalling()
 {
 	bFalling = false;
 	SetItemState(EItemState::EIS_Pickup);
+}
+
+void AWeapon::DecrementAmmoCount()
+{
+	if (AmmoCount - 1 < 0)
+		AmmoCount = 0;
+	else
+		--AmmoCount;
 }

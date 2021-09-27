@@ -143,6 +143,11 @@ protected:
 	 * @brief 기본 Ammo값으로 AmmoMap을 초기화합니다.
 	 */
 	void InitializeAmmoMap();
+
+	/**
+	 * @brief 장착한 무기가 탄약을 가지고 있는지 확인합니다.
+	 */
+	bool WeaponHasAmmo();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

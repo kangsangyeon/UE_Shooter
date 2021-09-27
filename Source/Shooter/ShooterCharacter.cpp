@@ -155,6 +155,9 @@ void AShooterCharacter::LookUp(float Value)
 
 void AShooterCharacter::FireWeapon()
 {
+	if (EquippedWeapon)
+		EquippedWeapon->DecrementAmmoCount();
+
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySound2D(this, FireSound);
@@ -303,6 +306,9 @@ void AShooterCharacter::OnFinishedCrosshairFireTimer()
 
 void AShooterCharacter::OnFireButtonPressed()
 {
+	if (WeaponHasAmmo() == false)
+		return;
+
 	bFireButtonPressed = true;
 
 	TryStartAutoFireTimer();
@@ -315,6 +321,9 @@ void AShooterCharacter::OnFireButtonReleased()
 
 void AShooterCharacter::TryStartAutoFireTimer()
 {
+	if (WeaponHasAmmo() == false)
+		return;
+
 	if (bShouldFire == false)
 		return;
 
@@ -483,6 +492,14 @@ void AShooterCharacter::InitializeAmmoMap()
 {
 	AmmoMap.Add(EAmmoType::EAT_9mm, Starting9mmAmmo);
 	AmmoMap.Add(EAmmoType::EAT_AR, StartingARAmmo);
+}
+
+bool AShooterCharacter::WeaponHasAmmo()
+{
+	if (EquippedWeapon == nullptr)
+		return false;
+
+	return EquippedWeapon->GetAmmoCount() > 0;
 }
 
 // Called every frame

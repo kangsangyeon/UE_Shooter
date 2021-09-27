@@ -31,5 +31,15 @@ private:
 	float ThrowWeaponTime;
 
 	bool bFalling;
+
+	/**
+	 * @brief 무기에 포함되어 있는 탄약 개수입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
+	int32 AmmoCount;
+
 public:
+	FORCEINLINE int32 GetAmmoCount() const { return AmmoCount; }
+
+	void DecrementAmmoCount();
 };
