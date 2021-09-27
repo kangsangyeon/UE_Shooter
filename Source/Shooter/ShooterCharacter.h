@@ -7,6 +7,16 @@
 #include "ShooterCharacter.generated.h"
 
 UENUM(BlueprintType)
+enum class ECombatState : uint8
+{
+	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
+	ECS_FireTimerInProgress UMETA(DisplayName = "FireTimerInProgress"),
+	ECS_Reloading UMETA(DisplayName = "Reloading"),
+
+	ECS_Max UMETA(DisplayName = "DefaultMax")
+};
+
+UENUM(BlueprintType)
 enum class EAmmoType : uint8
 {
 	EAT_9mm UMETA(DisplayName = "9mm"),
@@ -98,7 +108,7 @@ protected:
 	void OnFireButtonPressed();
 	void OnFireButtonReleased();
 
-	void TryStartAutoFireTimer();
+	void StartAutoFireTimer();
 
 	UFUNCTION()
 	void OnEndAutoFireTimer();
@@ -148,6 +158,12 @@ protected:
 	 * @brief 장착한 무기가 탄약을 가지고 있는지 확인합니다.
 	 */
 	bool WeaponHasAmmo();
+
+	void PlayFireSound();
+
+	void SendBullet();
+
+	void PlayGunFireMontage();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -335,13 +351,6 @@ private:
 	bool bFireButtonPressed;
 
 	/**
-	 * @brief 발사할 수 있는지에 대한 여부입니다.
-	 * true는 지금 당장 발사할 수 있음을 의미합니다.
-	 * 한 번 발사한 뒤 timer가 실행되는데, timer가 종료될 때까지 false값을 가집니다.
-	 */
-	bool bShouldFire;
-
-	/**
 	 * @brief 총알 발사 속도입니다.
 	 */
 	float AutoFireRate;
@@ -400,6 +409,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
 	int32 StartingARAmmo;
+
+	/**
+	 * @brief 캐릭터의 전투 상태입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	ECombatState CombatState;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
