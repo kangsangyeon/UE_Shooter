@@ -15,7 +15,7 @@ AItem::AItem() :
 	ItemCount(0),
 	ItemRarity(EItemRarity::EIR_Common),
 	ItemState(EItemState::EIS_Pickup),
-	ItemZCurveTime(0.7f),
+	ItemInterpCurveTime(0.7f),
 	ItemInterpStartLocation(FVector::ZeroVector),
 	ItemInterpTargetLocation(FVector::ZeroVector),
 	ItemInterpStartYawOffset(0.f),
@@ -148,7 +148,7 @@ void AItem::StartItemInterp(AShooterCharacter* Char)
 	ItemInterpStartYawOffset = FMath::Abs(ItemRotationYaw - CameraRotationYaw);
 
 	SetItemState(EItemState::EIS_EquipInterping);
-	GetWorld()->GetTimerManager().SetTimer(ItemInterpTimer, this, &AItem::FinishItemInterp, ItemZCurveTime);
+	GetWorld()->GetTimerManager().SetTimer(ItemInterpTimer, this, &AItem::FinishItemInterp, ItemInterpCurveTime);
 }
 
 void AItem::FinishItemInterp()
@@ -157,6 +157,9 @@ void AItem::FinishItemInterp()
 		Character->GetPickupItem(this);
 
 	bInterping = false;
+
+	// Interp중 ScaleCurve값에 영향을 받아 Scale을 변경했던 것을 원래대로 되돌립니다.
+	SetActorScale3D(FVector::OneVector);
 }
 
 void AItem::ItemInterp(float DeltaTime)
@@ -164,16 +167,15 @@ void AItem::ItemInterp(float DeltaTime)
 	if (bInterping == false)
 		return;
 
-	if (Character == nullptr || ItemZCurve == nullptr)
+	if (Character == nullptr || ItemZCurve == nullptr || ItemScaleCurve == nullptr)
 		return;
+
+	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(ItemInterpTimer);
 
 	// 이번 프레임에 이동할 목적지 Z 위치를 계산합니다.
 	const FVector ItemInterpDesiredLocation = FVector{Character->GetItemInterpDesiredDestination()};
 	const float ItemToCameraZ = (ItemInterpDesiredLocation - ItemInterpStartLocation).Z;
-
-	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(ItemInterpTimer);
 	const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
-
 	const float InterpZValue = ItemInterpStartLocation.Z + ItemToCameraZ * CurveValue;
 
 	// 이번 프레임에 이동할 목적지 X Y 위치를 계산합니다.
@@ -191,6 +193,13 @@ void AItem::ItemInterp(float DeltaTime)
 
 	// 액터의 회전을 설정합니다.
 	SetActorRotation(InterpRotation, ETeleportType::TeleportPhysics);
+
+	// 이번 프레임에 적용할 목적지 Scale Vector를 계산합니다.
+	const float InterpScaleValue = ItemScaleCurve->GetFloatValue(ElapsedTime);
+	const FVector InterpScale{FVector::OneVector * InterpScaleValue};
+
+	// 액터의 크기를 설정합니다.
+	SetActorScale3D(InterpScale);
 }
 
 void AItem::SetItemPropertiesPickupState()

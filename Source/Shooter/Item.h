@@ -166,10 +166,16 @@ protected:
 	class UCurveFloat* ItemZCurve;
 
 	/**
-	 * @brief ItemZCurve의 시간 길이입니다.
-	 */
+	* @brief 아이템이 Interp상태일 때 크기(Scale)을 결정하기 위해 사용되는 curve 애셋입니다.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
-	float ItemZCurveTime;
+	class UCurveFloat* ItemScaleCurve;
+
+	/**
+	* @brief Item Interp Curve 애셋의 시간 길이입니다.
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	float ItemInterpCurveTime;
 
 	/**
 	 * @brief Item Interp가 시작되었을 때 시작 위치입니다.
