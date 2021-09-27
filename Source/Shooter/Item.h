@@ -184,6 +184,11 @@ protected:
 	FVector ItemInterpTargetLocation;
 
 	/**
+	* @brief Interp가 시작되었을 때 카메라 Yaw와 아이템 Yaw간의 차이입니다.
+	*/
+	float ItemInterpStartYawOffset;
+
+	/**
 	 * @brief Interp 중인지에 대한 여부입니다.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))

@@ -4,6 +4,7 @@
 #include "Item.h"
 
 #include "ShooterCharacter.h"
+#include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -17,6 +18,7 @@ AItem::AItem() :
 	ItemZCurveTime(0.7f),
 	ItemInterpStartLocation(FVector::ZeroVector),
 	ItemInterpTargetLocation(FVector::ZeroVector),
+	ItemInterpStartYawOffset(0.f),
 	bInterping(false),
 	ItemInterpX(0.f),
 	ItemInterpY(0.f)
@@ -135,12 +137,17 @@ void AItem::BeDropped()
 
 void AItem::StartItemInterp(AShooterCharacter* Char)
 {
-	this->Character = Char;
-
+	Character = Char;
 	bInterping = true;
-	ItemInterpStartLocation = GetActorLocation();
-	SetItemState(EItemState::EIS_EquipInterping);
 
+	ItemInterpStartLocation = GetActorLocation();
+
+	// ItemInterpStartYawOffset을 초기화합니다.
+	const float CameraRotationYaw{Character->GetFollowCamera()->GetComponentRotation().Yaw};
+	const float ItemRotationYaw{GetActorRotation().Yaw};
+	ItemInterpStartYawOffset = FMath::Abs(ItemRotationYaw - CameraRotationYaw);
+
+	SetItemState(EItemState::EIS_EquipInterping);
 	GetWorld()->GetTimerManager().SetTimer(ItemInterpTimer, this, &AItem::FinishItemInterp, ItemZCurveTime);
 }
 
@@ -177,6 +184,13 @@ void AItem::ItemInterp(float DeltaTime)
 	// 액터의 위치를 설정합니다.
 	const FVector ItemLocation = FVector{InterpXValue, InterpYValue, InterpZValue};
 	SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+
+	// 이번 프레임에 적용할 목적지 Rotation을 계산합니다.
+	const FRotator CameraRotation{Character->GetFollowCamera()->GetComponentRotation()};
+	const FRotator InterpRotation{0.f, CameraRotation.Yaw + ItemInterpStartYawOffset, 0.f};
+
+	// 액터의 회전을 설정합니다.
+	SetActorRotation(InterpRotation, ETeleportType::TeleportPhysics);
 }
 
 void AItem::SetItemPropertiesPickupState()
