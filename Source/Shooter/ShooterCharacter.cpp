@@ -311,7 +311,7 @@ void AShooterCharacter::OnEndAutoFireTimer()
 
 	if (WeaponHasAmmo() == false)
 	{
-		// 무기를 장전합니다.
+		ReloadWeapon();
 		return;
 	}
 
@@ -522,6 +522,41 @@ void AShooterCharacter::PlayGunFireMontage()
 	}
 }
 
+void AShooterCharacter::OnReloadButtonPressed()
+{
+	ReloadWeapon();
+}
+
+void AShooterCharacter::ReloadWeapon()
+{
+	if (CombatState != ECombatState::ECS_Unoccupied)
+		return;
+
+	// TODO: bool CarryingAmmo() 를 만들자.
+	if (true)
+	{
+		// TODO: 아이템 타입에 대응되는 enum을 만들자.
+		// TODO: EquippedWeapon->WeaponType을 Switch문으로
+		FName MontageSectionName{TEXT("Reload SMG")};
+
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && ReloadMontage)
+		{
+			AnimInstance->Montage_Play(ReloadMontage);
+			AnimInstance->Montage_JumpToSection(MontageSectionName);
+		}
+	}
+
+	CombatState = ECombatState::ECS_Reloading;
+}
+
+void AShooterCharacter::OnFinishedReloading()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+	
+	// TODO: Update AmmoMap
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -560,6 +595,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &AShooterCharacter::InteractButtonPressed);
 	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Released, this, &AShooterCharacter::InteractButtonReleased);
+
+	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &AShooterCharacter::OnReloadButtonPressed);
 }
 
 void AShooterCharacter::GetPickupItem(AItem* Item)

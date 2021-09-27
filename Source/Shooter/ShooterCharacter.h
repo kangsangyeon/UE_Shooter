@@ -164,6 +164,13 @@ protected:
 	void SendBullet();
 
 	void PlayGunFireMontage();
+
+	void OnReloadButtonPressed();
+
+	void ReloadWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void OnFinishedReloading();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -415,6 +422,12 @@ private:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
 	ECombatState CombatState;
+
+	/**
+	 * @brief 재장전 애니메이션에 사용될 Montage 애셋입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	UAnimMontage* ReloadMontage;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
