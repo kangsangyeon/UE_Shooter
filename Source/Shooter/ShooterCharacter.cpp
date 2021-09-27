@@ -53,7 +53,10 @@ AShooterCharacter::AShooterCharacter() :
 	// 아이템 Trace
 	OverlappedItemCount(0),
 	// 아이템 Interp
-	ItemInterpDesiredOffset(FVector{250.f, 0.f, 60.f})
+	ItemInterpDesiredOffset(FVector{250.f, 0.f, 60.f}),
+	// 기본 탄약 개수
+	Starting9mmAmmo(85),
+	StartingARAmmo(120)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -97,6 +100,9 @@ void AShooterCharacter::BeginPlay()
 
 	// 기본 무기를 스폰하고 장착합니다.
 	EquipWeapon(SpawnDefaultWeapon());
+
+	// 기본 탄약을 얻습니다.
+	InitializeAmmoMap();
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -471,6 +477,12 @@ void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
 {
 	DropWeapon();
 	EquipWeapon(WeaponToSwap);
+}
+
+void AShooterCharacter::InitializeAmmoMap()
+{
+	AmmoMap.Add(EAmmoType::EAT_9mm, Starting9mmAmmo);
+	AmmoMap.Add(EAmmoType::EAT_AR, StartingARAmmo);
 }
 
 // Called every frame

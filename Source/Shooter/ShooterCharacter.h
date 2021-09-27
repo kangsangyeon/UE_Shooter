@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EAmmoType : uint8
+{
+	EAT_9mm UMETA(DisplayName = "9mm"),
+	EAT_AR UMETA(DisplayName = "AssaultRifle"),
+
+	EAT_MAX UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -129,6 +138,11 @@ protected:
 	 * @brief 현재 장착중인 무기를 버리고 TraceHitItem을 새로 장착합니다.
 	 */
 	void SwapWeapon(AWeapon* WeaponToSwap);
+
+	/**
+	 * @brief 기본 Ammo값으로 AmmoMap을 초기화합니다.
+	 */
+	void InitializeAmmoMap();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -369,6 +383,18 @@ private:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta=(AllowPrivateAccess="true"))
 	TSubclassOf<class AWeapon> DefaultWeaponClass;
+
+	/**
+	 * @brief 탄약의 종류와 그 소지 개수를 저장하는 Map입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	TMap<EAmmoType, int32> AmmoMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	int32 Starting9mmAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	int32 StartingARAmmo;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
