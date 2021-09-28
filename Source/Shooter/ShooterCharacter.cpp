@@ -553,7 +553,22 @@ void AShooterCharacter::OnFinishedReloading()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
 
-	// TODO: Update AmmoMap
+	if (EquippedWeapon == nullptr)
+		return;
+
+	if (CarryingAmmo() == false)
+		return;
+
+	const EAmmoType AmmoType = EquippedWeapon->GetAmmoType();
+	const int32 CarriedAmmo = AmmoMap[AmmoType];
+	const int32 MagazineEmptySpace = EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmoCount();
+
+	// 탄창에 넣을 총알의 개수를 계산합니다.
+	const int32 ReloadAmount = CarriedAmmo < MagazineEmptySpace ? CarriedAmmo : MagazineEmptySpace;
+
+	// 소지한 탄약의 개수를 줄이고, 탄창에 탄약을 추가합니다.
+	AmmoMap[AmmoType] -= ReloadAmount;
+	EquippedWeapon->ReloadAmmo(ReloadAmount);
 }
 
 bool AShooterCharacter::CarryingAmmo()

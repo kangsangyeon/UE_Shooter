@@ -49,6 +49,12 @@ private:
 	int32 AmmoCount;
 
 	/**
+	 * @brief 한 탄창에 들어가는 탄약의 개수입니다.
+	 */
+	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
+	int32 MagazineCapacity;
+
+	/**
 	 * @brief 무기의 종류입니다.
 	 */
 	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
@@ -70,6 +76,10 @@ public:
 	FORCEINLINE int32 GetAmmoCount() const { return AmmoCount; }
 
 	void DecrementAmmoCount();
+
+	void ReloadAmmo(int32 Amount);
+
+	FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
 
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 

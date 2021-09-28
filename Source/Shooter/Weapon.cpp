@@ -7,6 +7,7 @@ AWeapon::AWeapon() :
 	ThrowWeaponTime(.7f),
 	bFalling(false),
 	AmmoCount(0),
+	MagazineCapacity(30),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm)
 {
@@ -67,4 +68,10 @@ void AWeapon::DecrementAmmoCount()
 		AmmoCount = 0;
 	else
 		--AmmoCount;
+}
+
+void AWeapon::ReloadAmmo(int32 Amount)
+{
+	checkf(AmmoCount + Amount <= MagazineCapacity, TEXT("탄창의 크기보다 더 많은 양의 탄약을 장전하려 합니다."));
+	AmmoCount += Amount;
 }
