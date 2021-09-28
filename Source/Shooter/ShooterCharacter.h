@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AmmoType.h"
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
@@ -14,15 +15,6 @@ enum class ECombatState : uint8
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
 
 	ECS_Max UMETA(DisplayName = "DefaultMax")
-};
-
-UENUM(BlueprintType)
-enum class EAmmoType : uint8
-{
-	EAT_9mm UMETA(DisplayName = "9mm"),
-	EAT_AR UMETA(DisplayName = "AssaultRifle"),
-
-	EAT_MAX UMETA(DisplayName = "DefaultMax")
 };
 
 UCLASS()
@@ -171,6 +163,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnFinishedReloading();
+
+	bool CarryingAmmo();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

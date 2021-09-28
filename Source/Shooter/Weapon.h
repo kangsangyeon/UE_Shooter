@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AmmoType.h"
 #include "Item.h"
 #include "Weapon.generated.h"
 
@@ -53,10 +54,26 @@ private:
 	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
 	EWeaponType WeaponType;
 
+	/**
+	 * @brief 무기가 사용하는 탄약의 종류입니다.
+	 */
+	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
+	EAmmoType AmmoType;
+
+	/**
+	 * @brief 재장전시 재생될 애니메이션 Montage의 Section 이름입니다.
+	 */
+	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
+	FName ReloadMontageSectionName;
+
 public:
 	FORCEINLINE int32 GetAmmoCount() const { return AmmoCount; }
 
 	void DecrementAmmoCount();
 
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+
+	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
+
+	FORCEINLINE FName GetReloadMontageSectionName() const { return ReloadMontageSectionName; }
 };

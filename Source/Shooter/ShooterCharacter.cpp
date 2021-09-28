@@ -532,13 +532,12 @@ void AShooterCharacter::ReloadWeapon()
 	if (CombatState != ECombatState::ECS_Unoccupied)
 		return;
 
-	// TODO: bool CarryingAmmo() 를 만들자.
-	if (true)
+	if (CarryingAmmo())
 	{
-		// TODO: 아이템 타입에 대응되는 enum을 만들자.
-		// TODO: EquippedWeapon->WeaponType을 Switch문으로
-		FName MontageSectionName{TEXT("Reload SMG")};
+		CombatState = ECombatState::ECS_Reloading;
 
+		// Reload 애니메이션을 재생하고, 무기 타입에 맞는 Section으로 건너뛴다.
+		const FName MontageSectionName = EquippedWeapon->GetReloadMontageSectionName();
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (AnimInstance && ReloadMontage)
 		{
@@ -553,8 +552,21 @@ void AShooterCharacter::ReloadWeapon()
 void AShooterCharacter::OnFinishedReloading()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
-	
+
 	// TODO: Update AmmoMap
+}
+
+bool AShooterCharacter::CarryingAmmo()
+{
+	if (EquippedWeapon == nullptr)
+		return false;
+
+	EAmmoType AmmoType = EquippedWeapon->GetAmmoType();
+
+	if (AmmoMap.Contains(AmmoType) == false)
+		return false;
+
+	return AmmoMap[AmmoType] > 0;
 }
 
 // Called every frame
