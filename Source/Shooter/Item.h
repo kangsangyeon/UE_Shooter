@@ -214,11 +214,25 @@ protected:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
 	class AShooterCharacter* Character;
+
+	/**
+	 * @brief 아이템을 주울 때 즉시 재생되는 효과음입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	class USoundCue* PickupSound;
+
+	/**
+	 * @brief 아이템을 장착할 때 재생되는 효과음입니다.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess="true"))
+	class USoundCue* EquipSound;
 public:
 	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	void SetItemState(EItemState State);
+	FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
+	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
 
 	UFUNCTION(BlueprintCallable)
 	TArray<bool> GetActiveStarsOfRarity() const;

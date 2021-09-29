@@ -455,6 +455,9 @@ void AShooterCharacter::InteractButtonPressed()
 	if (TraceHitItem)
 	{
 		TraceHitItem->StartItemInterp(this);
+
+		if (TraceHitItem->GetPickupSound())
+			UGameplayStatics::PlaySound2D(GetWorld(), TraceHitItem->GetPickupSound());
 	}
 }
 
@@ -665,6 +668,9 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
 	if (Weapon)
 	{
 		SwapWeapon(Weapon);
+		
+		if (Weapon->GetEquipSound())
+			UGameplayStatics::PlaySound2D(GetWorld(), Weapon->GetEquipSound());
 	}
 }
 
