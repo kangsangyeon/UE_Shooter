@@ -85,6 +85,9 @@ AShooterCharacter::AShooterCharacter() :
 
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
+	LeftHandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("LeftHandSceneComponent"));
+	LeftHandSceneComponent->SetupAttachment(RootComponent);
 }
 
 
@@ -587,7 +590,8 @@ void AShooterCharacter::OnGrabClip()
 	if (EquippedWeapon == nullptr)
 		return;
 
-	EquippedWeapon->SetMovingClip(true);
+	if (LeftHandSceneComponent == nullptr)
+		return;
 
 	// Clip의 Transform을 구합니다.
 	const int32 ClipBoneIndex{EquippedWeapon->GetClipBoneIndex()};
@@ -598,11 +602,16 @@ void AShooterCharacter::OnGrabClip()
 	const FAttachmentTransformRules AttachmentRules{EAttachmentRule::KeepRelative, true};
 	LeftHandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName{TEXT("Hand_L")});
 	LeftHandSceneComponent->SetWorldTransform(ClipTransform);
+
+	EquippedWeapon->SetMovingClip(true);
 }
 
 void AShooterCharacter::OnReleaseClip()
 {
 	if (EquippedWeapon == nullptr)
+		return;
+
+	if (LeftHandSceneComponent == nullptr)
 		return;
 
 	EquippedWeapon->SetMovingClip(false);
