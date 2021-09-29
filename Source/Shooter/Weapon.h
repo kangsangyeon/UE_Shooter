@@ -72,6 +72,17 @@ private:
 	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
 	FName ReloadMontageSectionName;
 
+	/**
+	 * @brief 무기 SkeletalMesh의 Clip에 해당되는 Bone의 이름입니다.
+	 */
+	UPROPERTY(Editanywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
+	FName ClipBoneName;
+
+	/**
+	* @brief 이 무기를 장착한 캐릭터가 재장전 애니메이션을 재생하고 있으며 clip을 움직이고 있는지에 대한 여부입니다.
+	*/
+	bool bMovingClip;
+
 public:
 	FORCEINLINE int32 GetAmmoCount() const { return AmmoCount; }
 
@@ -86,4 +97,8 @@ public:
 	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 
 	FORCEINLINE FName GetReloadMontageSectionName() const { return ReloadMontageSectionName; }
+
+	FORCEINLINE int32 GetClipBoneIndex() const { return Mesh->GetBoneIndex(ClipBoneName); }
+
+	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
 };

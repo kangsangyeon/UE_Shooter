@@ -582,6 +582,32 @@ bool AShooterCharacter::CarryingAmmo()
 	return AmmoMap[AmmoType] > 0;
 }
 
+void AShooterCharacter::OnGrabClip()
+{
+	if (EquippedWeapon == nullptr)
+		return;
+
+	EquippedWeapon->SetMovingClip(true);
+
+	// Clip의 Transform을 구합니다.
+	const int32 ClipBoneIndex{EquippedWeapon->GetClipBoneIndex()};
+	ClipTransform = EquippedWeapon->GetMesh()->GetBoneTransform(ClipBoneIndex);
+
+	// Left Hand Scene Component를 왼손에 붙이고 Clip Transform의 위치로 이동합니다.
+	// Keep Relative로 붙였기 때문에 왼손이 움직여도 왼손과 clip간의 초기 offset을 유지합니다.
+	const FAttachmentTransformRules AttachmentRules{EAttachmentRule::KeepRelative, true};
+	LeftHandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName{TEXT("Hand_L")});
+	LeftHandSceneComponent->SetWorldTransform(ClipTransform);
+}
+
+void AShooterCharacter::OnReleaseClip()
+{
+	if (EquippedWeapon == nullptr)
+		return;
+
+	EquippedWeapon->SetMovingClip(false);
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {

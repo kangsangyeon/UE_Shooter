@@ -9,7 +9,9 @@ AWeapon::AWeapon() :
 	AmmoCount(0),
 	MagazineCapacity(30),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
-	AmmoType(EAmmoType::EAT_9mm)
+	AmmoType(EAmmoType::EAT_9mm),
+	ClipBoneName(TEXT("smg_clip")),
+	bMovingClip(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }

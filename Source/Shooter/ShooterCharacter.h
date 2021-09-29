@@ -165,6 +165,20 @@ protected:
 	void OnFinishedReloading();
 
 	bool CarryingAmmo();
+
+	/**
+	 * @brief 애니메이션 블루프린트에서 OnGrabClip notify가 발생할 때 호출될 메소드입니다.
+	 * OnGrabClip notify는 재장전 애니메이션에서 탄창을 잡기 시작할 때 발생하는 애님 노티파이입니다.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void OnGrabClip();
+
+	/**
+	* @brief 애니메이션 블루프린트에서 OnReleaseClip notify가 발생할 때 호출될 메소드입니다.
+	* OnReleaseClip notify는 재장전 애니메이션에서 재장전을 마치고 탄창을 다시 총에 장착할 때 발생하는 애님 노티파이입니다.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void OnReleaseClip();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -422,6 +436,18 @@ private:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
 	UAnimMontage* ReloadMontage;
+
+	/**
+	 * @brief 재장전 애니메이션을 재생할 때, 맨 처음에 Clip을 잡았을 때의 Clip의 Transform입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	FTransform ClipTransform;
+
+	/**
+	 * @brief 재장전 애니메이션을 재생할 때, 캐릭터의 손에 부착할 Scene Component입니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta=(AllowPrivateAccess="true"))
+	USceneComponent* LeftHandSceneComponent;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; };
