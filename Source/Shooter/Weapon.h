@@ -81,6 +81,7 @@ private:
 	/**
 	* @brief 이 무기를 장착한 캐릭터가 재장전 애니메이션을 재생하고 있으며 clip을 움직이고 있는지에 대한 여부입니다.
 	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon Properties", meta=(AllowPrivateAccess="true"))
 	bool bMovingClip;
 
 public:
