@@ -86,7 +86,38 @@ void UShooterAnimInstance::TurnInPlace()
 	// 직전 프레임에 비해 이번 프레임에서 어느정도 회전했는지에 대한 차이를 얻고,
 	// 그 차이를 RootYawOffset에 누적합니다.
 	const float YawDelta{CharacterYaw - CharacterYawLastFrame};
-	RootYawOffset -= YawDelta;
+	// RootYawOffset은 회전값이기 때문에 [-180, 180] 사이의 값으로 Clamp합니다.
+	RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
+
+
+	// 제자리 돌기 애니메이션이 재생중일 때에만 처리합니다.
+	const float Turning{GetCurveValue(TEXT("Turning"))};
+	if (Turning > 0)
+	{
+		// 지난 프레임과 이번 프레임의 RotationCurve값의 차이를 구합니다.
+		// 이번 프레임에서 캐릭터는 이 차이값만큼 회전합니다.
+		RotationCurveLastFrame = RotationCurve;
+		RotationCurve = RotationCurve = GetCurveValue(TEXT("Rotation"));
+		const float DeltaRotation{RotationCurve - RotationCurveLastFrame};
+
+		// RootYawOffset > 0 이라면 왼쪽으로 돌고있다는 것을 의미하고,
+		// RootYawOffset < 0 이라면 오른쪽으로 돌고있다는 것을 의미합니다.
+		// 어느 쪽으로 돌고있는지에 따라 RootYawOffset에 값을 빼거나 더합니다.
+		// 
+		// 예를 들어, RootYawOffset이 90을 넘기 시작하여 왼쪽으로 돌기 시작했다면, 왼쪽으로 제자리 돌기 애니메이션이 재생될 것이고
+		// 애니메이션을 재생하면서 실제로 왼쪽으로 회전해야 하기 때문에 RootYawRotation 값을 점차 0이 되도록 DeltaRotation을 매 프레임마다 빼주어야 합니다.
+		RootYawOffset > 0 ? RootYawOffset -= DeltaRotation : RootYawOffset += DeltaRotation;
+
+		// 빠르게 회전하여 90도보다 더 큰 값으로 회전했다면,
+		// 90도를 초과한 만큼의 차이는 바로 없앱니다.
+		// 이렇게 함으로써 캐릭터는 카메라가 바라보는 방향과 근사한 방향으로 바라볼 수 있게 됩니다.
+		const float AbsRootYawOffset{FMath::Abs(RootYawOffset)};
+		if (AbsRootYawOffset > 90)
+		{
+			const float YawExcess{AbsRootYawOffset - 90.f};
+			RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
+		}
+	}
 
 	if (GEngine)
 	{

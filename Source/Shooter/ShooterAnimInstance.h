@@ -81,4 +81,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
 	float RootYawOffset;
+
+	/**
+	 * @brief 이번 프레임의 제자리 돌기 애니메이션에 포함된 Rotation Curve 값입니다.
+	 * 만약 이번 프레임에 제자리 돌기 애니메이션이 재생중이지 않았다면 이 값은 갱신되지 않습니다.
+	 */
+	float RotationCurve;
+
+	/**
+	* @brief 직전 프레임의 제자리 돌기 애니메이션에 포함된 Rotation Curve 값입니다.
+	* 만약 직전 프레임에서 제자리 돌기 애니메이션이 재생중이지 않았다면 이 값은 갱신되지 않습니다.
+	 */
+	float RotationCurveLastFrame;
 };
