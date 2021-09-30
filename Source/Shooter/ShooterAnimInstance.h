@@ -15,10 +15,18 @@ class SHOOTER_API UShooterAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
+	UShooterAnimInstance();
+	
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties(float DeltaTime);
 
 	virtual void NativeInitializeAnimation() override;
+
+protected:
+	/**
+	* @brief 제자리 돌기(Turn in Place) 구현을 위한 변수들을 갱신합니다.
+	*/
+	void TurnInPlace();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
@@ -60,4 +68,17 @@ private:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
+
+	/**
+	* @brief 이번 프레임에서의 캐릭터 Yaw입니다.
+	*/
+	float CharacterYaw;
+
+	/**
+	* @brief 직전 프레임에서의 캐릭터 Yaw입니다.
+	*/
+	float CharacterYawLastFrame;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
+	float RootYawOffset;
 };
