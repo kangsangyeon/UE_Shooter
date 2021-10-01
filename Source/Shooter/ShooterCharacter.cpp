@@ -538,18 +538,23 @@ void AShooterCharacter::ReloadWeapon()
 	if (CombatState != ECombatState::ECS_Unoccupied)
 		return;
 
+	// 장착한 총에 맞는 탄약을 가지고 있지 않다면, 재장전을 실행하지 않습니다.
 	if (CarryingAmmo())
-	{
-		CombatState = ECombatState::ECS_Reloading;
+		return;
 
-		// Reload 애니메이션을 재생하고, 무기 타입에 맞는 Section으로 건너뛴다.
-		const FName MontageSectionName = EquippedWeapon->GetReloadMontageSectionName();
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && ReloadMontage)
-		{
-			AnimInstance->Montage_Play(ReloadMontage);
-			AnimInstance->Montage_JumpToSection(MontageSectionName);
-		}
+	// 탄창에 이미 탄약이 가득 차 있다면, 재장전을 실행하지 않습니다.
+	if (EquippedWeapon->ClipIsFull())
+		return;
+
+	CombatState = ECombatState::ECS_Reloading;
+
+	// Reload 애니메이션을 재생하고, 무기 타입에 맞는 Section으로 건너뛴다.
+	const FName MontageSectionName = EquippedWeapon->GetReloadMontageSectionName();
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		AnimInstance->Montage_JumpToSection(MontageSectionName);
 	}
 }
 
@@ -668,7 +673,7 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
 	if (Weapon)
 	{
 		SwapWeapon(Weapon);
-		
+
 		if (Weapon->GetEquipSound())
 			UGameplayStatics::PlaySound2D(GetWorld(), Weapon->GetEquipSound());
 	}

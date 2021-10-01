@@ -102,4 +102,6 @@ public:
 	FORCEINLINE int32 GetClipBoneIndex() const { return Mesh->GetBoneIndex(ClipBoneName); }
 
 	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
+
+	FORCEINLINE bool ClipIsFull() const { return GetAmmoCount() >= GetMagazineCapacity(); }
 };
