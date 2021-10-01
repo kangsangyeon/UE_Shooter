@@ -6,9 +6,17 @@
 #include "Animation/AnimInstance.h"
 #include "ShooterAnimInstance.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class EOffsetState : uint8
+{
+	EOS_Hip UMETA(DisplayName="Hip"),
+	EOS_Aiming UMETA(DisplayName="Aiming"),
+	EOS_Reloading UMETA(DisplayName="Reloading"),
+	EOS_InAir UMETA(DisplayName="InAir"),
+
+	EOS_Max UMETA(DisplayName="DefaultMax")
+};
+
 UCLASS()
 class SHOOTER_API UShooterAnimInstance : public UAnimInstance
 {
@@ -27,6 +35,11 @@ protected:
 	* @brief 제자리 돌기(Turn in Place) 구현을 위한 변수들을 갱신합니다.
 	*/
 	void TurnInPlace();
+
+	/**
+	 * @brief OffsetState 변수를 갱신합니다.
+	 */
+	void UpdateOffsetState();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
@@ -105,4 +118,10 @@ private:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
 	bool bReloading;
+
+	/**
+	 * @brief Offset 상태입니다. 어떤 Aim Offset을 사용할 것인지 결정합니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
+	EOffsetState OffsetState;
 };
