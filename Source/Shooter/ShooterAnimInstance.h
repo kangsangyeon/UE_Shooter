@@ -16,7 +16,7 @@ class SHOOTER_API UShooterAnimInstance : public UAnimInstance
 
 public:
 	UShooterAnimInstance();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties(float DeltaTime);
 
@@ -93,4 +93,16 @@ private:
 	* 만약 직전 프레임에서 제자리 돌기 애니메이션이 재생중이지 않았다면 이 값은 갱신되지 않습니다.
 	 */
 	float RotationCurveLastFrame;
+
+	/**
+	 * @brief 캐릭터가 바라보는 방향 Rotation의 Pitch입니다. Aim Offset에 사용됩니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
+	float AimingPitch;
+
+	/**
+	 * @brief 재장전 중인지에 대한 여부입니다. 재장전 중일 때 Aim Offset을 막기 위해 사용됩니다.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
+	bool bReloading;
 };

@@ -456,6 +456,8 @@ public:
 
 	FORCEINLINE bool GetAiming() const { return bAiming; };
 
+	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
+
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
 

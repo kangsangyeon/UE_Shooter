@@ -16,7 +16,9 @@ UShooterAnimInstance::UShooterAnimInstance() :
 	bAiming(false),
 	CharacterYaw(0.f),
 	CharacterYawLastFrame(0.f),
-	RootYawOffset(0.f)
+	RootYawOffset(0.f),
+	AimingPitch(0.f),
+	bReloading(false)
 {
 }
 
@@ -51,6 +53,9 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	// 조준중인지에 대한 여부를 얻습니다.
 	bAiming = ShooterCharacter->GetAiming();
 
+	// 재장전중인지에 대한 여부를 얻습니다.
+	bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+
 	// 제자리 돌기 관련 변수를 새로고칩니다.
 	TurnInPlace();
 
@@ -82,6 +87,9 @@ void UShooterAnimInstance::TurnInPlace()
 
 	CharacterYawLastFrame = CharacterYaw;
 	CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+
+	// 캐릭터가 바라보는 방향 Rotation으로부터 Pitch를 얻습니다.
+	AimingPitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 
 	// 직전 프레임에 비해 이번 프레임에서 어느정도 회전했는지에 대한 차이를 얻고,
 	// 그 차이를 RootYawOffset에 누적합니다.
