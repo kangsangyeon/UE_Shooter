@@ -539,7 +539,7 @@ void AShooterCharacter::ReloadWeapon()
 		return;
 
 	// 장착한 총에 맞는 탄약을 가지고 있지 않다면, 재장전을 실행하지 않습니다.
-	if (CarryingAmmo())
+	if (CarryingAmmo() == false)
 		return;
 
 	// 탄창에 이미 탄약이 가득 차 있다면, 재장전을 실행하지 않습니다.
