@@ -58,6 +58,9 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	// 재장전중인지에 대한 여부를 얻습니다.
 	bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 
+	// CharacterYaw 변수를 새로고칩니다.
+	UpdateCharacterYaw();
+
 	// 제자리 돌기 관련 변수를 새로고칩니다.
 	TurnInPlace();
 
@@ -96,13 +99,19 @@ void UShooterAnimInstance::UpdateOffsetState()
 		OffsetState = EOffsetState::EOS_Hip;
 }
 
-void UShooterAnimInstance::TurnInPlace()
+void UShooterAnimInstance::UpdateCharacterYaw()
 {
 	if (ShooterCharacter == nullptr)
 		return;
 
 	CharacterYawLastFrame = CharacterYaw;
 	CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+}
+
+void UShooterAnimInstance::TurnInPlace()
+{
+	if (ShooterCharacter == nullptr)
+		return;
 
 	// 캐릭터가 바라보는 방향 Rotation으로부터 Pitch를 얻습니다.
 	AimingPitch = ShooterCharacter->GetBaseAimRotation().Pitch;

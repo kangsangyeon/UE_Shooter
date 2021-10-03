@@ -41,6 +41,12 @@ protected:
 	 */
 	void UpdateOffsetState();
 
+	/**
+	 * @brief CharacterYaw 변수를 갱신합니다.
+	 * CharacterYaw는 TurnInPlace()와 Lean()에서 사용하기 때문에, UpdateAnimationProperties 함수 내에서 저 두 함수보다 더 먼저 호출되어야 합니다.
+	 */
+	void UpdateCharacterYaw();
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
 	class AShooterCharacter* ShooterCharacter;
