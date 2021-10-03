@@ -37,6 +37,11 @@ protected:
 	void TurnInPlace();
 
 	/**
+	 * @brief 이동할 때 몸을 기우는 애니메이션을 재생하기 위해 필요한 변수를 갱신합니다.
+	 */
+	void Lean(float DeltaTime);
+
+	/**
 	 * @brief OffsetState 변수를 갱신합니다.
 	 */
 	void UpdateOffsetState();
@@ -130,4 +135,11 @@ private:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Turn in Place", meta=(AllowPrivateAccess="true"))
 	EOffsetState OffsetState;
+
+	/**
+	* @brief 이번 프레임과 저번 프레임에서의 캐릭터 Yaw의 차이 값을 자연스러운 애니메이션을 위해 보간한 값입니다.
+	* running blendspace에서 Lean을 구현할 때 사용됩니다.
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation - Lean", meta=(AllowPrivateAccess="true"))
+	float InterpedYawDelta;
 };

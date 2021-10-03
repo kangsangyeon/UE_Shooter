@@ -64,6 +64,9 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	// 제자리 돌기 관련 변수를 새로고칩니다.
 	TurnInPlace();
 
+	// 달릴 때 숙이기 관련 변수를 새로고칩니다.
+	Lean(DeltaTime);
+
 	// 현재 캐릭터의 행동에 알맞은 Offset State를 가지도록 새로고칩니다.
 	UpdateOffsetState();
 
@@ -175,4 +178,18 @@ void UShooterAnimInstance::TurnInPlace()
 			GEngine->AddOnScreenDebugMessage(21, 0.f, FColor::White, FString::Printf(TEXT("RootYawOffset %f"), RootYawOffset));
 		}
 	}
+}
+
+void UShooterAnimInstance::Lean(float DeltaTime)
+{
+	if (ShooterCharacter == nullptr)
+		return;
+
+	const float Target{(CharacterYaw - CharacterYawLastFrame) / DeltaTime};
+	const float Interp{FMath::FInterpTo(InterpedYawDelta, Target, DeltaTime, 6.f)};
+	InterpedYawDelta = FMath::Clamp(Interp, -90.f, 90.f);
+
+	// Debug
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(30, 0.f, FColor::White, FString::Printf(TEXT("YawDelta: %f"), InterpedYawDelta));
 }
