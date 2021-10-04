@@ -15,8 +15,8 @@ UShooterAnimInstance::UShooterAnimInstance() :
 	MovementOffset(0.f),
 	LastMovementOffset(0.f),
 	bAiming(false),
-	CharacterYaw(0.f),
-	CharacterYawLastFrame(0.f),
+	CharacterRotation(0.f),
+	CharacterRotationLastFrame(0.f),
 	RootYawOffset(0.f),
 	AimingPitch(0.f),
 	bReloading(false),
@@ -59,7 +59,7 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 
 	// CharacterYaw 변수를 새로고칩니다.
-	UpdateCharacterYaw();
+	UpdateCharacterRotation();
 
 	// 제자리 돌기 관련 변수를 새로고칩니다.
 	TurnInPlace();
@@ -102,13 +102,14 @@ void UShooterAnimInstance::UpdateOffsetState()
 		OffsetState = EOffsetState::EOS_Hip;
 }
 
-void UShooterAnimInstance::UpdateCharacterYaw()
+void UShooterAnimInstance::UpdateCharacterRotation()
 {
 	if (ShooterCharacter == nullptr)
 		return;
 
-	CharacterYawLastFrame = CharacterYaw;
-	CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = ShooterCharacter->GetActorRotation();
+	CharacterRotationDelta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 }
 
 void UShooterAnimInstance::TurnInPlace()
@@ -137,7 +138,7 @@ void UShooterAnimInstance::TurnInPlace()
 
 		// 직전 프레임에 비해 이번 프레임에서 어느정도 회전했는지에 대한 차이를 얻고,
 		// 그 차이를 RootYawOffset에 누적합니다.
-		const float YawDelta{CharacterYaw - CharacterYawLastFrame};
+		const float YawDelta{CharacterRotationDelta.Yaw};
 		// RootYawOffset은 회전값이기 때문에 [-180, 180] 사이의 값으로 Clamp합니다.
 		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
 
@@ -174,7 +175,7 @@ void UShooterAnimInstance::TurnInPlace()
 		// Debug
 		if (GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(20, 0.f, FColor::White, FString::Printf(TEXT("CharacterYaw %f"), CharacterYaw));
+			GEngine->AddOnScreenDebugMessage(20, 0.f, FColor::White, FString::Printf(TEXT("CharacterYaw %f"), CharacterRotation.Yaw));
 			GEngine->AddOnScreenDebugMessage(21, 0.f, FColor::White, FString::Printf(TEXT("RootYawOffset %f"), RootYawOffset));
 		}
 	}
@@ -185,7 +186,7 @@ void UShooterAnimInstance::Lean(float DeltaTime)
 	if (ShooterCharacter == nullptr)
 		return;
 
-	const float Target{(CharacterYaw - CharacterYawLastFrame) / DeltaTime};
+	const float Target{CharacterRotationDelta.Yaw / DeltaTime};
 	const float Interp{FMath::FInterpTo(InterpedYawDelta, Target, DeltaTime, 6.f)};
 	InterpedYawDelta = FMath::Clamp(Interp, -90.f, 90.f);
 
