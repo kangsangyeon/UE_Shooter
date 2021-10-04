@@ -386,9 +386,6 @@ void AShooterCharacter::TraceForItems()
 	// 그 물체가 Widget을 가진 아이템일 때에 Widget을 표시합니다.
 	if (ItemTraceResult.bBlockingHit)
 	{
-		FString Message = FString::Printf(TEXT("Item Trace Hit : %s %s"), *ItemTraceResult.GetActor()->GetName(), *ItemTraceResult.GetComponent()->GetName());
-		GEngine->AddOnScreenDebugMessage(10, 0, FColor::White, Message);
-
 		TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
 		if (TraceHitItem && TraceHitItem->GetPickupWidget())
 		{

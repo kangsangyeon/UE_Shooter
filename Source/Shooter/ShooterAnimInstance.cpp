@@ -69,19 +69,6 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 	// 현재 캐릭터의 행동에 알맞은 Offset State를 가지도록 새로고칩니다.
 	UpdateOffsetState();
-
-	// Debug
-	const FString AimRotationMessage = FString::Printf(TEXT("Base Aim Rotation: %f"), AimRotation.Yaw);
-	const FString MovementRotationMessage = FString::Printf(TEXT("Movement Rotation: %f"), MovementRotation.Yaw);
-	const FString RotationOffsetMessage = FString::Printf(TEXT("Movement Offset: %f"), MovementOffset);
-	const FString OffsetStateMessage = FString::Printf(TEXT("OffsetState %hhd"), OffsetState);
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 0, FColor::White, AimRotationMessage);
-		GEngine->AddOnScreenDebugMessage(2, 0, FColor::White, MovementRotationMessage);
-		GEngine->AddOnScreenDebugMessage(3, 0, FColor::White, RotationOffsetMessage);
-		GEngine->AddOnScreenDebugMessage(4, 0.f, FColor::White, OffsetStateMessage);
-	}
 }
 
 void UShooterAnimInstance::NativeInitializeAnimation()
@@ -171,13 +158,6 @@ void UShooterAnimInstance::TurnInPlace()
 				RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
 			}
 		}
-
-		// Debug
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(20, 0.f, FColor::White, FString::Printf(TEXT("CharacterYaw %f"), CharacterRotation.Yaw));
-			GEngine->AddOnScreenDebugMessage(21, 0.f, FColor::White, FString::Printf(TEXT("RootYawOffset %f"), RootYawOffset));
-		}
 	}
 }
 
@@ -189,8 +169,4 @@ void UShooterAnimInstance::Lean(float DeltaTime)
 	const float Target{CharacterRotationDelta.Yaw / DeltaTime};
 	const float Interp{FMath::FInterpTo(InterpedYawDelta, Target, DeltaTime, 6.f)};
 	InterpedYawDelta = FMath::Clamp(Interp, -90.f, 90.f);
-
-	// Debug
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(30, 0.f, FColor::White, FString::Printf(TEXT("YawDelta: %f"), InterpedYawDelta));
 }
